@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: LinkPlaza API
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+  datasource:
+    url: jdbc:mysql://localhost:3306/linkplaza?serverTimezone=UTC
+    username: root
+    password: ""
+server:
+  port: 8080
