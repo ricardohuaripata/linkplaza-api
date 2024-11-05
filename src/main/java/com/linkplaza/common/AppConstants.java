@@ -8,4 +8,8 @@ public class AppConstants {
     public static final String TOKEN_HEADER = "Jwt-Token";
     public static final String OPTIONS_HTTP_METHOD = "options";
     public static final String TOKEN_PREFIX = "Bearer ";
+
+    public static final String USER_NOT_FOUND = "No user found.";
+    public static final String EMAIL_ALREADY_TAKEN = "The email is already taken.";
+
 }
