@@ -1,6 +1,8 @@
 spring:
   application:
     name: LinkPlaza API
+  config:
+    import: secret.yml
   jpa:
     hibernate:
       ddl-auto: update

@@ -8,7 +8,7 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.linkplaza.error.ValidationError;
+import com.linkplaza.exception.ValidationError;
 
 import lombok.Builder;
 import lombok.Getter;

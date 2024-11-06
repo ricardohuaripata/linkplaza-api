@@ -1,3 +1,6 @@
+# Ignore file secret.yml
+/src/main/resources/secret.yml
+
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar

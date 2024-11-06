@@ -1,4 +1,4 @@
-package com.linkplaza.exceptions;
+package com.linkplaza.exception;
 
 public class UserNotFoundException extends RuntimeException {
     public UserNotFoundException() {

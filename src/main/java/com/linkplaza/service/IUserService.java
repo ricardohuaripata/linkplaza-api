@@ -6,4 +6,7 @@ public interface IUserService {
     User getUserById(Long userId);
 
     User getUserByEmail(String email);
+
+    User getUserByUsername(String username);
+
 }

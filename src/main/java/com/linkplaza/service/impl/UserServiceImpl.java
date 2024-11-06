@@ -1,12 +1,10 @@
 package com.linkplaza.service.impl;
 
-import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.linkplaza.entity.User;
-import com.linkplaza.exceptions.UserNotFoundException;
+import com.linkplaza.exception.UserNotFoundException;
 import com.linkplaza.repository.UserRepository;
 import com.linkplaza.service.IUserService;
 
@@ -24,6 +22,11 @@ public class UserServiceImpl implements IUserService {
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
 
+    }
+
+    @Override
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
     }
 
 }

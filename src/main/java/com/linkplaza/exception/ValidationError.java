@@ -1,4 +1,4 @@
-package com.linkplaza.error;
+package com.linkplaza.exception;
 
 import lombok.Builder;
 import lombok.Getter;

@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.linkplaza.entity.User;
 import com.linkplaza.response.SuccessResponse;
 
 @RestController
@@ -14,10 +15,17 @@ public class TestController {
 
     @GetMapping()
     public ResponseEntity<?> helloWorld() {
-        SuccessResponse<?> successResponse = SuccessResponse.builder()
-                .status("success")
-                .message("Hello world! :)")
-                .build();
+        SuccessResponse<User> successResponse = new SuccessResponse<>();
+        successResponse.setStatus("success");
+        successResponse.setMessage("Hello from public endpoint! :)");
+        return new ResponseEntity<>(successResponse, HttpStatus.OK);
+    }
+
+    @GetMapping("/secure")
+    public ResponseEntity<?> securedEndpoint() {
+        SuccessResponse<User> successResponse = new SuccessResponse<>();
+        successResponse.setStatus("success");
+        successResponse.setMessage("Hello from secured endpoint! :)");
         return new ResponseEntity<>(successResponse, HttpStatus.OK);
     }
 

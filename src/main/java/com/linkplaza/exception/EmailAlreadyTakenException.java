@@ -1,4 +1,4 @@
-package com.linkplaza.exceptions;
+package com.linkplaza.exception;
 
 public class EmailAlreadyTakenException extends RuntimeException {
     public EmailAlreadyTakenException() {
