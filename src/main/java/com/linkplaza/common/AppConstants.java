@@ -25,4 +25,7 @@ public class AppConstants {
     public static final String INVALID_ACCOUNT_VERIFICATION = "Invalid account verification.";
     public static final String EXPIRED_VERIFICATION_CODE = "The verification code has expired.";
 
+    public static final String EMAIL_PATTERN = "^[\\w!#$%&’*+/=?`{|}~^-]+(?:\\.[\\w!#$%&’*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$";
+    public static final String PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–[{}]:;',?/*~$^+=<>.]).{8,}$";
+
 }
