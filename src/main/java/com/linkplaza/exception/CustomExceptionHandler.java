@@ -116,4 +116,19 @@ public class CustomExceptionHandler {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, AppConstants.EMAIL_ALREADY_TAKEN, null);
     }
 
+    @ExceptionHandler(UsernameAlreadyTakenException.class)
+    public ResponseEntity<ErrorResponse> handleUsernameAlreadyTakenException(UsernameAlreadyTakenException e) {
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, AppConstants.USERNAME_ALREADY_TAKEN, null);
+    }
+
+    @ExceptionHandler(InvalidAccountVerificationException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidAccountVerificationException(InvalidAccountVerificationException e) {
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, AppConstants.INVALID_ACCOUNT_VERIFICATION, null);
+    }
+
+    @ExceptionHandler(ExpiredVerificationCodeException.class)
+    public ResponseEntity<ErrorResponse> handleExpiredVerificationCodeException(ExpiredVerificationCodeException e) {
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, AppConstants.EXPIRED_VERIFICATION_CODE, null);
+    }
+
 }

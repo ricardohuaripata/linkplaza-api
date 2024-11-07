@@ -36,13 +36,11 @@ public class User {
     @JsonIgnore
     private String password;
 
-    @Column(length = 64, nullable = false, unique = true)
+    @Column(length = 64, unique = true)
     private String username;
 
     @Column(length = 32, nullable = false)
     private String role;
-
-    private Boolean emailVerified;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     private Date dateCreated;

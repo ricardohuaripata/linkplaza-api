@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.linkplaza.common.AppConstants;
+import com.linkplaza.dto.AccountVerifyDto;
 import com.linkplaza.dto.SignInDto;
 import com.linkplaza.dto.SignUpDto;
 import com.linkplaza.entity.User;
@@ -31,11 +32,10 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> signUp(@RequestBody @Valid SignUpDto signUpDto) {
-        User newUser = authService.signUp(signUpDto);
+        authService.signUp(signUpDto);
         SuccessResponse<User> successResponse = new SuccessResponse<>();
         successResponse.setStatus("success");
-        successResponse.setMessage("User created successfully.");
-        successResponse.setData(newUser);
+        successResponse.setMessage("Please, check your email to complete your sign up.");
         return new ResponseEntity<>(successResponse, HttpStatus.CREATED);
     }
 
@@ -45,7 +45,6 @@ public class AuthController {
         User user = authService.signIn(signInDto);
 
         String token = jwtTokenService.generateToken(new UserPrincipal(user), TokenType.AUTH_TOKEN);
-
         HttpHeaders newHttpHeaders = new HttpHeaders();
         newHttpHeaders.add(AppConstants.TOKEN_HEADER, token);
 
@@ -55,5 +54,15 @@ public class AuthController {
         successResponse.setData(user);
 
         return new ResponseEntity<>(successResponse, newHttpHeaders, HttpStatus.OK);
+    }
+
+    @PostMapping("/verify-signup")
+    public ResponseEntity<?> completeSignUp(@RequestBody @Valid AccountVerifyDto accountVerifyDto) {
+        User user = authService.completeSignUp(accountVerifyDto);
+        SuccessResponse<User> successResponse = new SuccessResponse<>();
+        successResponse.setStatus("success");
+        successResponse.setMessage("Successful sign up.");
+        successResponse.setData(user);
+        return new ResponseEntity<>(successResponse, HttpStatus.CREATED);
     }
 }

@@ -13,10 +13,10 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SignUpDto {
+public class AccountVerifyDto {
     @NotBlank
-    private String email;
+    private String verificationCode;
 
     @NotBlank
-    private String password;
+    private String email;
 }

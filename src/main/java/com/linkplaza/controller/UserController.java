@@ -1,15 +1,18 @@
 package com.linkplaza.controller;
 
-import java.util.UUID;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.linkplaza.dto.ClaimUsernameDto;
 import com.linkplaza.entity.User;
 import com.linkplaza.response.SuccessResponse;
 import com.linkplaza.service.IUserService;
@@ -28,6 +31,18 @@ public class UserController {
         SuccessResponse<User> successResponse = new SuccessResponse<>();
         successResponse.setStatus("success");
         successResponse.setMessage("User found.");
+        successResponse.setData(user);
+
+        return new ResponseEntity<>(successResponse, HttpStatus.OK);
+    }
+
+    @PostMapping("/username")
+    public ResponseEntity<?> claimUsername(@RequestBody @Valid ClaimUsernameDto claimUsernameDto) {
+        User user = userService.claimUsername(claimUsernameDto);
+
+        SuccessResponse<User> successResponse = new SuccessResponse<>();
+        successResponse.setStatus("success");
+        successResponse.setMessage("Successful username claim.");
         successResponse.setData(user);
 
         return new ResponseEntity<>(successResponse, HttpStatus.OK);

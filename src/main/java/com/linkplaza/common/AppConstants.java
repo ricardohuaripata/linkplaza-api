@@ -3,6 +3,7 @@ package com.linkplaza.common;
 public class AppConstants {
     public static final Long JWT_AUTH_EXPIRATION = 3 * 86400000L; // 3 dias
     public static final Long JWT_RESET_PASSWORD_EXPIRATION = 15 * 60 * 1000L; // 15 minutos
+    public static final Long VERIFICATION_CODE_EXPIRATION = 15 * 60 * 1000L; // 15 minutos
 
     public static final String AUTHORITIES = "authorities";
     public static final String TOKEN_HEADER = "Jwt-Token";
@@ -20,5 +21,8 @@ public class AppConstants {
 
     public static final String USER_NOT_FOUND = "No user found.";
     public static final String EMAIL_ALREADY_TAKEN = "The email is already taken.";
+    public static final String USERNAME_ALREADY_TAKEN = "The username is already taken.";
+    public static final String INVALID_ACCOUNT_VERIFICATION = "Invalid account verification.";
+    public static final String EXPIRED_VERIFICATION_CODE = "The verification code has expired.";
 
 }

@@ -3,6 +3,7 @@ package com.linkplaza.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -38,9 +39,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeRequests(auth -> auth
                         .antMatchers("/api/v1/test").permitAll()
-                        .antMatchers("/api/v1/user/**").permitAll()
-                        .antMatchers("/api/v1/auth/signup").permitAll()
-                        .antMatchers("/api/v1/auth/signin").permitAll()
+                        .antMatchers(HttpMethod.POST, "/api/v1/auth/signup").permitAll()
+                        .antMatchers(HttpMethod.POST, "/api/v1/auth/signin").permitAll()
+                        .antMatchers(HttpMethod.POST, "/api/v1/auth/verify-signup").permitAll()
+                        .antMatchers(HttpMethod.GET, "/api/v1/user/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .exceptionHandling(handling -> handling.accessDeniedHandler(accessDeniedHandler)
                         .authenticationEntryPoint(authenticationEntryPoint))
