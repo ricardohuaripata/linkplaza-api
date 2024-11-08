@@ -62,12 +62,9 @@ public class UserServiceImpl implements IUserService {
                     "The username '" + claimUsernameDto.getUsername() + "' is already taken.");
         }
 
-        String authEmail = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-        User user = getUserByEmail(authEmail);
-
+        User user = getAuthenticatedUser();
         user.setUsername(claimUsernameDto.getUsername());
         user.setDateLastModified(new Date());
-
         return userRepository.save(user);
 
     }
@@ -77,8 +74,7 @@ public class UserServiceImpl implements IUserService {
         SocialPlatform socialPlatform = socialPlatformService
                 .getSocialPlatformById(addSocialLinkDto.getSocialPlatformId());
 
-        String authEmail = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-        User user = getUserByEmail(authEmail);
+        User user = getAuthenticatedUser();
 
         // verificar si ya existe un SocialLink con la misma SocialPlatform
         boolean alreadyExists = user.getSocialLinks().stream()
@@ -101,8 +97,7 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public User addCustomLink(AddCustomLinkDto addCustomLinkDto) {
-        String authEmail = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-        User user = getUserByEmail(authEmail);
+        User user = getAuthenticatedUser();
 
         CustomLink customLink = new CustomLink();
         customLink.setUser(user);
@@ -117,8 +112,7 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public User updateProfile(UpdateProfileDto updateProfileDto) {
-        String authEmail = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-        User user = getUserByEmail(authEmail);
+        User user = getAuthenticatedUser();
 
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setPropertyCondition(
@@ -127,6 +121,11 @@ public class UserServiceImpl implements IUserService {
 
         user.setDateLastModified(new Date());
         return userRepository.save(user);
+    }
+
+    public User getAuthenticatedUser() {
+        String authUserEmail = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+        return getUserByEmail(authUserEmail);
     }
 
 }
