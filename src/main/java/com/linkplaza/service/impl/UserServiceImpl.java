@@ -9,11 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.linkplaza.dto.AddCustomLinkDto;
 import com.linkplaza.dto.AddSocialLinkDto;
 import com.linkplaza.dto.ClaimUsernameDto;
+import com.linkplaza.entity.CustomLink;
 import com.linkplaza.entity.SocialLink;
 import com.linkplaza.entity.SocialPlatform;
 import com.linkplaza.entity.User;
+import com.linkplaza.repository.CustomLinkRepository;
 import com.linkplaza.repository.SocialLinkRepository;
 import com.linkplaza.repository.UserRepository;
 import com.linkplaza.service.ISocialPlatformService;
@@ -27,6 +30,8 @@ public class UserServiceImpl implements IUserService {
     private ISocialPlatformService socialPlatformService;
     @Autowired
     private SocialLinkRepository socialLinkRepository;
+    @Autowired
+    private CustomLinkRepository customLinkRepository;
 
     @Override
     public User getUserById(Long id) {
@@ -89,6 +94,22 @@ public class UserServiceImpl implements IUserService {
         socialLink.setActive(true);
 
         user.getSocialLinks().add(socialLinkRepository.save(socialLink));
+        return userRepository.save(user);
+    }
+
+    @Override
+    public User addCustomLink(AddCustomLinkDto addCustomLinkDto) {
+        String authEmail = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+        User user = getUserByEmail(authEmail);
+
+        CustomLink customLink = new CustomLink();
+        customLink.setUser(user);
+        customLink.setLink(addCustomLinkDto.getLink());
+        customLink.setTitle(addCustomLinkDto.getTitle());
+        customLink.setPosition(0);
+        customLink.setActive(true);
+
+        user.getCustomLinks().add(customLinkRepository.save(customLink));
         return userRepository.save(user);
     }
 

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.linkplaza.dto.AddCustomLinkDto;
 import com.linkplaza.dto.AddSocialLinkDto;
 import com.linkplaza.dto.ClaimUsernameDto;
 import com.linkplaza.entity.User;
@@ -56,6 +57,18 @@ public class UserController {
         SuccessResponse<User> successResponse = new SuccessResponse<>();
         successResponse.setStatus("success");
         successResponse.setMessage("Social link added successfully.");
+        successResponse.setData(user);
+
+        return new ResponseEntity<>(successResponse, HttpStatus.OK);
+    }
+
+    @PostMapping("/custom-link")
+    public ResponseEntity<?> addCustomLink(@RequestBody @Valid AddCustomLinkDto addCustomLinkDto) {
+        User user = userService.addCustomLink(addCustomLinkDto);
+
+        SuccessResponse<User> successResponse = new SuccessResponse<>();
+        successResponse.setStatus("success");
+        successResponse.setMessage("Custom link added successfully.");
         successResponse.setData(user);
 
         return new ResponseEntity<>(successResponse, HttpStatus.OK);

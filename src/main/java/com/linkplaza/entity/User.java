@@ -57,6 +57,10 @@ public class User {
     @OrderBy("position ASC")
     private List<SocialLink> socialLinks;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @OrderBy("position ASC")
+    private List<CustomLink> customLinks;
+
     @Override
     public boolean equals(Object o) {
         if (this == o)

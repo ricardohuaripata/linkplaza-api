@@ -1,9 +1,10 @@
 package com.linkplaza.dto;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
-import com.linkplaza.annotation.ValidEmail;
-import com.linkplaza.annotation.ValidPassword;
+import com.linkplaza.common.AppConstants;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,10 +19,12 @@ import lombok.Setter;
 @AllArgsConstructor
 public class SignUpDto {
     @NotBlank
-    @ValidEmail
+    @Size(max = 256)
+    @Pattern(regexp = AppConstants.EMAIL_PATTERN, message = "Invalid email address.")
     private String email;
 
     @NotBlank
-    @ValidPassword
+    @Size(max = 256)
+    @Pattern(regexp = AppConstants.PASSWORD_PATTERN, message = "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.")
     private String password;
 }

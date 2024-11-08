@@ -17,12 +17,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "social_links")
+@Table(name = "custom_links")
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class SocialLink {
+public class CustomLink {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,12 +32,11 @@ public class SocialLink {
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "social_platform_id", referencedColumnName = "id", nullable = false)
-    private SocialPlatform socialPlatform;
-
     @Column(columnDefinition = "TEXT", nullable = false)
     private String link;
+
+    @Column(length = 128, nullable = false)
+    private String title;
 
     @Column(nullable = false)
     private int position;
