@@ -20,6 +20,7 @@ public class AppConstants {
     public static final String TOKEN_UNVERIFIABLE = "Token cannot be verified.";
 
     public static final String USER_NOT_FOUND = "No user found.";
+    public static final String SOCIAL_PLATFORM_NOT_FOUND = "No social platform found.";
     public static final String EMAIL_ALREADY_TAKEN = "The email is already taken.";
     public static final String USERNAME_ALREADY_TAKEN = "The username is already taken.";
     public static final String INVALID_ACCOUNT_VERIFICATION = "Invalid account verification.";

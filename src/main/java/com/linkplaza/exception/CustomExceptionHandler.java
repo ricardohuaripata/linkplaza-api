@@ -122,13 +122,24 @@ public class CustomExceptionHandler {
     }
 
     @ExceptionHandler(InvalidAccountVerificationException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidAccountVerificationException(InvalidAccountVerificationException e) {
+    public ResponseEntity<ErrorResponse> handleInvalidAccountVerificationException(
+            InvalidAccountVerificationException e) {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, AppConstants.INVALID_ACCOUNT_VERIFICATION, null);
     }
 
     @ExceptionHandler(ExpiredVerificationCodeException.class)
     public ResponseEntity<ErrorResponse> handleExpiredVerificationCodeException(ExpiredVerificationCodeException e) {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, AppConstants.EXPIRED_VERIFICATION_CODE, null);
+    }
+
+    @ExceptionHandler(SocialPlatformNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleSocialPlatformNotFoundException(SocialPlatformNotFoundException e) {
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, AppConstants.SOCIAL_PLATFORM_NOT_FOUND, null);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException e) {
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), null);
     }
 
 }

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.linkplaza.dto.AddSocialLinkDto;
 import com.linkplaza.dto.ClaimUsernameDto;
 import com.linkplaza.entity.User;
 import com.linkplaza.response.SuccessResponse;
@@ -43,6 +44,18 @@ public class UserController {
         SuccessResponse<User> successResponse = new SuccessResponse<>();
         successResponse.setStatus("success");
         successResponse.setMessage("Successful username claim.");
+        successResponse.setData(user);
+
+        return new ResponseEntity<>(successResponse, HttpStatus.OK);
+    }
+
+    @PostMapping("/social-link")
+    public ResponseEntity<?> addSocialLink(@RequestBody @Valid AddSocialLinkDto addSocialLinkDto) {
+        User user = userService.addSocialLink(addSocialLinkDto);
+
+        SuccessResponse<User> successResponse = new SuccessResponse<>();
+        successResponse.setStatus("success");
+        successResponse.setMessage("Social link added successfully.");
         successResponse.setData(user);
 
         return new ResponseEntity<>(successResponse, HttpStatus.OK);
