@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.linkplaza.dto.AddCustomLinkDto;
 import com.linkplaza.dto.AddSocialLinkDto;
 import com.linkplaza.dto.ClaimUsernameDto;
+import com.linkplaza.dto.UpdateProfileDto;
 import com.linkplaza.entity.CustomLink;
 import com.linkplaza.entity.SocialLink;
 import com.linkplaza.entity.SocialPlatform;
@@ -89,7 +91,7 @@ public class UserServiceImpl implements IUserService {
         SocialLink socialLink = new SocialLink();
         socialLink.setUser(user);
         socialLink.setSocialPlatform(socialPlatform);
-        socialLink.setLink(addSocialLinkDto.getLink());
+        socialLink.setUrl(addSocialLinkDto.getUrl());
         socialLink.setPosition(0);
         socialLink.setActive(true);
 
@@ -104,12 +106,26 @@ public class UserServiceImpl implements IUserService {
 
         CustomLink customLink = new CustomLink();
         customLink.setUser(user);
-        customLink.setLink(addCustomLinkDto.getLink());
+        customLink.setUrl(addCustomLinkDto.getUrl());
         customLink.setTitle(addCustomLinkDto.getTitle());
         customLink.setPosition(0);
         customLink.setActive(true);
 
         user.getCustomLinks().add(customLinkRepository.save(customLink));
+        return userRepository.save(user);
+    }
+
+    @Override
+    public User updateProfile(UpdateProfileDto updateProfileDto) {
+        String authEmail = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+        User user = getUserByEmail(authEmail);
+
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setPropertyCondition(
+                context -> context.getSource() != null && ((String) context.getSource()).trim().isEmpty() == false);
+        modelMapper.map(updateProfileDto, user);
+
+        user.setDateLastModified(new Date());
         return userRepository.save(user);
     }
 

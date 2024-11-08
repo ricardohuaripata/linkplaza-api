@@ -33,7 +33,7 @@ public class CustomLink {
     private User user;
 
     @Column(columnDefinition = "TEXT", nullable = false)
-    private String link;
+    private String url;
 
     @Column(length = 128, nullable = false)
     private String title;

@@ -53,6 +53,15 @@ public class User {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     private Date dateLastModified;
 
+    @Column(length = 64)
+    private String profileTitle;
+
+    @Column(length = 1024)
+    private String profileBio;
+
+    @Column(columnDefinition = "TEXT")
+    private String profilePictureUrl;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     @OrderBy("position ASC")
     private List<SocialLink> socialLinks;

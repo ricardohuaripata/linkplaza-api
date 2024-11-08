@@ -37,7 +37,7 @@ public class SocialLink {
     private SocialPlatform socialPlatform;
 
     @Column(columnDefinition = "TEXT", nullable = false)
-    private String link;
+    private String url;
 
     @Column(nullable = false)
     private int position;

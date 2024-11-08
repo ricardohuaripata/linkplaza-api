@@ -1,7 +1,5 @@
 package com.linkplaza.dto;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
@@ -15,12 +13,13 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddSocialLinkDto {
-    @NotNull
-    private Long socialPlatformId;
+public class UpdateProfileDto {
+    @Size(max = 64)
+    private String profileTitle;
 
-    @NotBlank
+    @Size(max = 1024)
+    private String profileBio;
+
     @Size(max = 6400)
-    private String url;
-
+    private String profilePictureUrl;
 }

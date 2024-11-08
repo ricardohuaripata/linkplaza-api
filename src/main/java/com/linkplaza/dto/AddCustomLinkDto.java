@@ -17,7 +17,7 @@ import lombok.Setter;
 public class AddCustomLinkDto {
     @NotBlank
     @Size(max = 6400)
-    private String link;
+    private String url;
 
     @NotBlank
     @Size(max = 128)

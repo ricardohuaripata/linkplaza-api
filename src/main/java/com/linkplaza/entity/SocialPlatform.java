@@ -29,7 +29,7 @@ public class SocialPlatform {
     private String name;
 
     @Column(length = 64, nullable = false)
-    private String domainLink;
+    private String domainUrl;
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String icon;
