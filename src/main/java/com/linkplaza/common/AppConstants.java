@@ -19,13 +19,6 @@ public class AppConstants {
     public static final String INCORRECT_CREDENTIALS = "Incorrect username or password.";
     public static final String TOKEN_UNVERIFIABLE = "Token cannot be verified.";
 
-    public static final String USER_NOT_FOUND = "No user found.";
-    public static final String SOCIAL_PLATFORM_NOT_FOUND = "No social platform found.";
-    public static final String EMAIL_ALREADY_TAKEN = "The email is already taken.";
-    public static final String USERNAME_ALREADY_TAKEN = "The username is already taken.";
-    public static final String INVALID_ACCOUNT_VERIFICATION = "Invalid account verification.";
-    public static final String EXPIRED_VERIFICATION_CODE = "The verification code has expired.";
-
     public static final String EMAIL_PATTERN = "^[\\w!#$%&’*+/=?`{|}~^-]+(?:\\.[\\w!#$%&’*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$";
     public static final String PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–[{}]:;',?/*~$^+=<>.]).{8,}$";
 

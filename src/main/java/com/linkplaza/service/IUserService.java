@@ -5,7 +5,7 @@ import com.linkplaza.dto.ClaimUsernameDto;
 import com.linkplaza.entity.User;
 
 public interface IUserService {
-    User getUserById(Long userId);
+    User getUserById(Long id);
 
     User getUserByEmail(String email);
 

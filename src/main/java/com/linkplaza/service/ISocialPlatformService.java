@@ -4,6 +4,6 @@ import com.linkplaza.entity.SocialPlatform;
 
 public interface ISocialPlatformService {
 
-    SocialPlatform getSocialPlatformById(Long socialPlatformId);
+    SocialPlatform getSocialPlatformById(Long id);
 
 }

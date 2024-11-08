@@ -1,10 +1,11 @@
 package com.linkplaza.service.impl;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.linkplaza.entity.SocialPlatform;
-import com.linkplaza.exception.SocialPlatformNotFoundException;
 import com.linkplaza.repository.SocialPlatformRepository;
 import com.linkplaza.service.ISocialPlatformService;
 
@@ -14,8 +15,9 @@ public class SocialPlatformServiceImpl implements ISocialPlatformService {
     private SocialPlatformRepository socialPlatformRepository;
 
     @Override
-    public SocialPlatform getSocialPlatformById(Long socialPlatformId) {
-        return socialPlatformRepository.findById(socialPlatformId).orElseThrow(SocialPlatformNotFoundException::new);
+    public SocialPlatform getSocialPlatformById(Long id) {
+        return socialPlatformRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("No social platform found with id " + id));
     }
 
 }

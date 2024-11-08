@@ -7,10 +7,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.linkplaza.entity.User;
-import com.linkplaza.exception.UserNotFoundException;
 import com.linkplaza.repository.UserRepository;
 
 import java.util.Optional;
+
+import javax.persistence.EntityNotFoundException;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
@@ -21,7 +22,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> user = userRepository.findByEmail(username);
         if (user.isEmpty()) {
-            throw new UserNotFoundException("User '" + username + "' not found");
+            throw new EntityNotFoundException("No user found with email '" + username + "'");
         } else {
             return new UserPrincipal(user.get());
         }

@@ -17,9 +17,6 @@ import com.linkplaza.dto.SignUpDto;
 import com.linkplaza.entity.SignUpAttempt;
 import com.linkplaza.entity.User;
 import com.linkplaza.enumeration.Role;
-import com.linkplaza.exception.EmailAlreadyTakenException;
-import com.linkplaza.exception.ExpiredVerificationCodeException;
-import com.linkplaza.exception.InvalidAccountVerificationException;
 import com.linkplaza.repository.SignUpAttemptRepository;
 import com.linkplaza.repository.UserRepository;
 import com.linkplaza.service.IAuthService;
@@ -48,32 +45,31 @@ public class AuthServiceImpl implements IAuthService {
         Optional<User> user = userRepository.findByEmail(signUpDto.getEmail());
 
         if (user.isPresent()) {
-            throw new EmailAlreadyTakenException();
-        } else {
-
-            SignUpAttempt signUpAttempt = new SignUpAttempt();
-
-            signUpAttempt.setEmail(signUpDto.getEmail());
-            signUpAttempt.setPassword(passwordEncoder.encode(signUpDto.getPassword()));
-            signUpAttempt.setDateExpiration(
-                    new Date(System.currentTimeMillis() + AppConstants.VERIFICATION_CODE_EXPIRATION));
-
-            StringBuilder verificationcode = new StringBuilder();
-            for (int i = 0; i < 6; i++) {
-                int num = (int) (Math.random() * 10);
-                verificationcode.append(num);
-            }
-
-            signUpAttempt.setVerificationCode(verificationcode.toString());
-            signUpAttemptRepository.save(signUpAttempt);
-
-            String mailTo = signUpDto.getEmail();
-            String mailSubject = "Your code: " + verificationcode.toString();
-            String mailContent = emailService.buildAccountVerifyMail(verificationcode.toString());
-
-            // emailService.send(mailTo, mailSubject, mailContent);
-
+            throw new IllegalArgumentException("The email '" + signUpDto.getEmail() + "' is already taken.");
         }
+
+        SignUpAttempt signUpAttempt = new SignUpAttempt();
+
+        signUpAttempt.setEmail(signUpDto.getEmail());
+        signUpAttempt.setPassword(passwordEncoder.encode(signUpDto.getPassword()));
+        signUpAttempt.setDateExpiration(
+                new Date(System.currentTimeMillis() + AppConstants.VERIFICATION_CODE_EXPIRATION));
+
+        StringBuilder verificationcode = new StringBuilder();
+        for (int i = 0; i < 6; i++) {
+            int num = (int) (Math.random() * 10);
+            verificationcode.append(num);
+        }
+
+        signUpAttempt.setVerificationCode(verificationcode.toString());
+        signUpAttemptRepository.save(signUpAttempt);
+
+        String mailTo = signUpDto.getEmail();
+        String mailSubject = "Your code: " + verificationcode.toString();
+        String mailContent = emailService.buildAccountVerifyMail(verificationcode.toString());
+
+        // emailService.send(mailTo, mailSubject, mailContent);
+
     }
 
     @Override
@@ -91,11 +87,11 @@ public class AuthServiceImpl implements IAuthService {
                         accountVerifyDto.getVerificationCode());
         // validar existencia del codigo para el email en cuestion
         if (signUpAttempt.isEmpty()) {
-            throw new InvalidAccountVerificationException();
+            throw new IllegalArgumentException("Invalid account verification.");
         }
         // validar caducidad del codigo
         if (signUpAttempt.get().getDateExpiration().before(new Date())) {
-            throw new ExpiredVerificationCodeException();
+            throw new IllegalStateException("The verification code has expired.");
         }
 
         // si todo es correcto:

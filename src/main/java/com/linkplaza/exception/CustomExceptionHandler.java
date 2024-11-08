@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
 
 import org.springframework.http.HttpMethod;
@@ -106,39 +107,18 @@ public class CustomExceptionHandler {
                 null);
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException e) {
-        return buildErrorResponse(HttpStatus.NOT_FOUND, AppConstants.USER_NOT_FOUND, null);
-    }
-
-    @ExceptionHandler(EmailAlreadyTakenException.class)
-    public ResponseEntity<ErrorResponse> handleEmailExistsException(EmailAlreadyTakenException e) {
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, AppConstants.EMAIL_ALREADY_TAKEN, null);
-    }
-
-    @ExceptionHandler(UsernameAlreadyTakenException.class)
-    public ResponseEntity<ErrorResponse> handleUsernameAlreadyTakenException(UsernameAlreadyTakenException e) {
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, AppConstants.USERNAME_ALREADY_TAKEN, null);
-    }
-
-    @ExceptionHandler(InvalidAccountVerificationException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidAccountVerificationException(
-            InvalidAccountVerificationException e) {
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, AppConstants.INVALID_ACCOUNT_VERIFICATION, null);
-    }
-
-    @ExceptionHandler(ExpiredVerificationCodeException.class)
-    public ResponseEntity<ErrorResponse> handleExpiredVerificationCodeException(ExpiredVerificationCodeException e) {
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, AppConstants.EXPIRED_VERIFICATION_CODE, null);
-    }
-
-    @ExceptionHandler(SocialPlatformNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleSocialPlatformNotFoundException(SocialPlatformNotFoundException e) {
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, AppConstants.SOCIAL_PLATFORM_NOT_FOUND, null);
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException e) {
+        return buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage(), null);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException e) {
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), null);
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalStateException(IllegalStateException e) {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), null);
     }
 

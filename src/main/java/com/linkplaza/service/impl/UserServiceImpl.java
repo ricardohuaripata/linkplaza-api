@@ -3,6 +3,8 @@ package com.linkplaza.service.impl;
 import java.util.Date;
 import java.util.Optional;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -12,8 +14,6 @@ import com.linkplaza.dto.ClaimUsernameDto;
 import com.linkplaza.entity.SocialLink;
 import com.linkplaza.entity.SocialPlatform;
 import com.linkplaza.entity.User;
-import com.linkplaza.exception.UserNotFoundException;
-import com.linkplaza.exception.UsernameAlreadyTakenException;
 import com.linkplaza.repository.SocialLinkRepository;
 import com.linkplaza.repository.UserRepository;
 import com.linkplaza.service.ISocialPlatformService;
@@ -29,18 +29,21 @@ public class UserServiceImpl implements IUserService {
     private SocialLinkRepository socialLinkRepository;
 
     @Override
-    public User getUserById(Long userId) {
-        return userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+    public User getUserById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("No user found with id " + id));
     }
 
     @Override
     public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("No user found with email '" + email + "'"));
     }
 
     @Override
     public User getUserByUsername(String username) {
-        return userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("No user found with username '" + username + "'"));
     }
 
     @Override
@@ -48,16 +51,18 @@ public class UserServiceImpl implements IUserService {
         Optional<User> anyUser = userRepository.findByUsername(claimUsernameDto.getUsername());
 
         if (anyUser.isPresent()) {
-            throw new UsernameAlreadyTakenException();
-        } else {
-            String authEmail = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-            User user = getUserByEmail(authEmail);
-
-            user.setUsername(claimUsernameDto.getUsername());
-            user.setDateLastModified(new Date());
-
-            return userRepository.save(user);
+            throw new IllegalArgumentException(
+                    "The username '" + claimUsernameDto.getUsername() + "' is already taken.");
         }
+
+        String authEmail = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+        User user = getUserByEmail(authEmail);
+
+        user.setUsername(claimUsernameDto.getUsername());
+        user.setDateLastModified(new Date());
+
+        return userRepository.save(user);
+
     }
 
     @Override
