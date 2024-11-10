@@ -16,7 +16,4 @@ import lombok.Setter;
 public class AccountVerifyDto {
     @NotBlank
     private String verificationCode;
-
-    @NotBlank
-    private String email;
 }

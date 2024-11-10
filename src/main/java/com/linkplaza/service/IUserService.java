@@ -1,9 +1,5 @@
 package com.linkplaza.service;
 
-import com.linkplaza.dto.AddCustomLinkDto;
-import com.linkplaza.dto.AddSocialLinkDto;
-import com.linkplaza.dto.ClaimUsernameDto;
-import com.linkplaza.dto.UpdateProfileDto;
 import com.linkplaza.entity.User;
 
 public interface IUserService {
@@ -11,14 +7,6 @@ public interface IUserService {
 
     User getUserByEmail(String email);
 
-    User getUserByUsername(String username);
-
-    User claimUsername(ClaimUsernameDto claimUsernameDto);
-
-    User addSocialLink(AddSocialLinkDto addSocialLinkDto);
-
-    User addCustomLink(AddCustomLinkDto addCustomLinkDto);
-
-    User updateProfile(UpdateProfileDto updateProfileDto);
+    User getAuthenticatedUser();
 
 }

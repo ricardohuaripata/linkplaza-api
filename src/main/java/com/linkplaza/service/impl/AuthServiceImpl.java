@@ -14,11 +14,12 @@ import com.linkplaza.common.AppConstants;
 import com.linkplaza.dto.AccountVerifyDto;
 import com.linkplaza.dto.SignInDto;
 import com.linkplaza.dto.SignUpDto;
-import com.linkplaza.entity.SignUpAttempt;
 import com.linkplaza.entity.User;
+import com.linkplaza.entity.VerificationCode;
 import com.linkplaza.enumeration.Role;
-import com.linkplaza.repository.SignUpAttemptRepository;
+import com.linkplaza.enumeration.VerificationCodeType;
 import com.linkplaza.repository.UserRepository;
+import com.linkplaza.repository.VerificationCodeRepository;
 import com.linkplaza.service.IAuthService;
 import com.linkplaza.service.IEmailService;
 import com.linkplaza.service.IUserService;
@@ -28,8 +29,6 @@ public class AuthServiceImpl implements IAuthService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private SignUpAttemptRepository signUpAttemptRepository;
-    @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -37,43 +36,40 @@ public class AuthServiceImpl implements IAuthService {
     private IUserService userService;
     @Autowired
     private IEmailService emailService;
+    @Autowired
+    private VerificationCodeRepository verificationCodeRepository;
 
     @Override
     @Transactional
-    public void signUp(SignUpDto signUpDto) {
+    public User signUp(SignUpDto signUpDto) {
 
-        Optional<User> user = userRepository.findByEmail(signUpDto.getEmail());
-
-        if (user.isPresent()) {
+        Optional<User> existingUser = userRepository.findByEmail(signUpDto.getEmail());
+        if (existingUser.isPresent()) {
             throw new IllegalArgumentException("The email '" + signUpDto.getEmail() + "' is already taken.");
         }
 
-        SignUpAttempt signUpAttempt = new SignUpAttempt();
+        User newUser = new User();
+        Date currentDate = new Date();
+        newUser.setEmail(signUpDto.getEmail());
+        newUser.setPassword(passwordEncoder.encode(signUpDto.getPassword()));
+        newUser.setDateCreated(currentDate);
+        newUser.setDateLastModified(currentDate);
+        newUser.setRole(Role.ROLE_USER.name());
+        newUser.setEmailVerified(false);
+        User savedUser = userRepository.save(newUser);
 
-        signUpAttempt.setEmail(signUpDto.getEmail());
-        signUpAttempt.setPassword(passwordEncoder.encode(signUpDto.getPassword()));
-        signUpAttempt.setDateExpiration(
-                new Date(System.currentTimeMillis() + AppConstants.VERIFICATION_CODE_EXPIRATION));
+        String verificationcode = generateVerificationCode(savedUser, VerificationCodeType.EMAIL_VERIFICATION.name());
 
-        StringBuilder verificationcode = new StringBuilder();
-        for (int i = 0; i < 6; i++) {
-            int num = (int) (Math.random() * 10);
-            verificationcode.append(num);
-        }
+        String mailTo = savedUser.getEmail();
+        String mailSubject = "Your code: " + verificationcode;
+        String mailContent = emailService.buildAccountVerifyMail(verificationcode);
+        emailService.send(mailTo, mailSubject, mailContent);
 
-        signUpAttempt.setVerificationCode(verificationcode.toString());
-        signUpAttemptRepository.save(signUpAttempt);
-
-        String mailTo = signUpDto.getEmail();
-        String mailSubject = "Your code: " + verificationcode.toString();
-        String mailContent = emailService.buildAccountVerifyMail(verificationcode.toString());
-
-        // emailService.send(mailTo, mailSubject, mailContent);
-
+        return savedUser;
     }
 
     @Override
-    public User signIn(SignInDto signInDto) {
+    public User authenticateUser(SignInDto signInDto) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 signInDto.getEmail(), signInDto.getPassword()));
         return userService.getUserByEmail(signInDto.getEmail());
@@ -81,32 +77,44 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     @Transactional
-    public User completeSignUp(AccountVerifyDto accountVerifyDto) {
-        Optional<SignUpAttempt> signUpAttempt = signUpAttemptRepository
-                .findFirstByEmailAndVerificationCodeOrderByDateExpirationDesc(accountVerifyDto.getEmail(),
-                        accountVerifyDto.getVerificationCode());
-        // validar existencia del codigo para el email en cuestion
-        if (signUpAttempt.isEmpty()) {
-            throw new IllegalArgumentException("Invalid account verification.");
+    public User accountVerify(AccountVerifyDto accountVerifyDto) {
+        User authUser = userService.getAuthenticatedUser();
+
+        Optional<VerificationCode> verificationCode = verificationCodeRepository
+                .findFirstByUserAndCodeAndTypeAndUsedFalseOrderByDateExpirationDesc(authUser,
+                        accountVerifyDto.getVerificationCode(), VerificationCodeType.EMAIL_VERIFICATION.name());
+        // validar existencia del codigo
+        if (verificationCode.isEmpty()) {
+            throw new IllegalArgumentException("Wrong email or verification code.");
         }
         // validar caducidad del codigo
-        if (signUpAttempt.get().getDateExpiration().before(new Date())) {
+        if (verificationCode.get().getDateExpiration().before(new Date())) {
             throw new IllegalStateException("The verification code has expired.");
         }
 
         // si todo es correcto:
-        // se eliminan todos los intentos de registro para el email en cuestion
-        signUpAttemptRepository.deleteByEmail(signUpAttempt.get().getEmail());
-        // se completa el registro del usuario
-        User newUser = new User();
-        Date currentDate = new Date();
+        verificationCode.get().setUsed(true);
+        verificationCodeRepository.save(verificationCode.get());
 
-        newUser.setEmail(signUpAttempt.get().getEmail());
-        newUser.setPassword(signUpAttempt.get().getPassword());
-        newUser.setDateCreated(currentDate);
-        newUser.setDateLastModified(currentDate);
-        newUser.setRole(Role.ROLE_USER.name());
-
-        return userRepository.save(newUser);
+        authUser.setEmailVerified(true);
+        return userRepository.save(authUser);
     }
+
+    public String generateVerificationCode(User user, String type) {
+        StringBuilder code = new StringBuilder();
+        for (int i = 0; i < 6; i++) {
+            int num = (int) (Math.random() * 10);
+            code.append(num);
+        }
+        VerificationCode verificationCode = new VerificationCode();
+        verificationCode.setUser(user);
+        verificationCode.setCode(code.toString());
+        verificationCode.setType(type);
+        verificationCode.setUsed(false);
+        verificationCode
+                .setDateExpiration(new Date(System.currentTimeMillis() + AppConstants.VERIFICATION_CODE_EXPIRATION));
+        verificationCodeRepository.save(verificationCode);
+        return code.toString();
+    }
+
 }

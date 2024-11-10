@@ -15,9 +15,19 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClaimUsernameDto {
+public class CreatePageDto {
     @NotBlank
-    @Size(min = 2, max = 64)
-    @Pattern(regexp = "^[a-zA-Z0-9_.]+$", message = "Usernames may only contain letters, numbers, underscores and periods.")
-    private String username;
+    @Size(max = 64)
+    @Pattern(regexp = "^[a-zA-Z0-9_.]+$", message = "URL may only contain letters, numbers, underscores and periods.")
+    private String url;
+
+    @Size(max = 64)
+    private String title;
+
+    @Size(max = 1024)
+    private String bio;
+
+    @Size(max = 6400)
+    private String pictureUrl;
+
 }

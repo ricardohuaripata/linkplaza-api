@@ -1,5 +1,6 @@
 package com.linkplaza.dto;
 
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
@@ -13,13 +14,17 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateProfileDto {
+public class UpdatePageDto {
     @Size(max = 64)
-    private String profileTitle;
+    @Pattern(regexp = "^[a-zA-Z0-9_.]+$", message = "URL may only contain letters, numbers, underscores and periods.")
+    private String url;
+
+    @Size(max = 64)
+    private String title;
 
     @Size(max = 1024)
-    private String profileBio;
+    private String bio;
 
     @Size(max = 6400)
-    private String profilePictureUrl;
+    private String pictureUrl;
 }

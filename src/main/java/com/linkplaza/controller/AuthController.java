@@ -20,29 +20,30 @@ import com.linkplaza.enumeration.TokenType;
 import com.linkplaza.response.SuccessResponse;
 import com.linkplaza.security.JwtTokenService;
 import com.linkplaza.security.UserPrincipal;
-import com.linkplaza.service.impl.AuthServiceImpl;
+import com.linkplaza.service.IAuthService;
 
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
     @Autowired
-    private AuthServiceImpl authService;
+    private IAuthService authService;
     @Autowired
     private JwtTokenService jwtTokenService;
 
     @PostMapping("/signup")
     public ResponseEntity<?> signUp(@RequestBody @Valid SignUpDto signUpDto) {
-        authService.signUp(signUpDto);
+        User user = authService.signUp(signUpDto);
         SuccessResponse<User> successResponse = new SuccessResponse<>();
         successResponse.setStatus("success");
-        successResponse.setMessage("Please, check your email to complete your sign up.");
+        successResponse.setMessage("Please, check your email to verify your account.");
+        successResponse.setData(user);
         return new ResponseEntity<>(successResponse, HttpStatus.CREATED);
     }
 
     @PostMapping("/signin")
     public ResponseEntity<?> signIn(@RequestBody @Valid SignInDto signInDto) {
 
-        User user = authService.signIn(signInDto);
+        User user = authService.authenticateUser(signInDto);
 
         String token = jwtTokenService.generateToken(new UserPrincipal(user), TokenType.AUTH_TOKEN);
         HttpHeaders newHttpHeaders = new HttpHeaders();
@@ -52,17 +53,16 @@ public class AuthController {
         successResponse.setStatus("success");
         successResponse.setMessage("Successful sign in.");
         successResponse.setData(user);
-
         return new ResponseEntity<>(successResponse, newHttpHeaders, HttpStatus.OK);
     }
 
-    @PostMapping("/verify-signup")
-    public ResponseEntity<?> completeSignUp(@RequestBody @Valid AccountVerifyDto accountVerifyDto) {
-        User user = authService.completeSignUp(accountVerifyDto);
+    @PostMapping("/account-verify")
+    public ResponseEntity<?> accountVerify(@RequestBody @Valid AccountVerifyDto accountVerifyDto) {
+        User user = authService.accountVerify(accountVerifyDto);
         SuccessResponse<User> successResponse = new SuccessResponse<>();
         successResponse.setStatus("success");
-        successResponse.setMessage("Successful sign up.");
+        successResponse.setMessage("Account verified successfully.");
         successResponse.setData(user);
-        return new ResponseEntity<>(successResponse, HttpStatus.CREATED);
+        return new ResponseEntity<>(successResponse, HttpStatus.OK);
     }
 }

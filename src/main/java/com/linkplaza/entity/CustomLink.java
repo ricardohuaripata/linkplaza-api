@@ -29,8 +29,8 @@ public class CustomLink {
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
-    private User user;
+    @JoinColumn(name = "page_id", referencedColumnName = "id", nullable = false)
+    private Page page;
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String url;

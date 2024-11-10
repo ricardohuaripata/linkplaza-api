@@ -29,8 +29,8 @@ public class SocialLink {
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
-    private User user;
+    @JoinColumn(name = "page_id", referencedColumnName = "id", nullable = false)
+    private Page page;
 
     @ManyToOne
     @JoinColumn(name = "social_platform_id", referencedColumnName = "id", nullable = false)

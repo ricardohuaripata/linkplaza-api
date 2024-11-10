@@ -6,10 +6,10 @@ import com.linkplaza.dto.SignUpDto;
 import com.linkplaza.entity.User;
 
 public interface IAuthService {
-    void signUp(SignUpDto signUpDto);
+    User signUp(SignUpDto signUpDto);
 
-    User signIn(SignInDto signInDto);
+    User authenticateUser(SignInDto signInDto);
 
-    User completeSignUp(AccountVerifyDto accountVerifyDto);
+    User accountVerify(AccountVerifyDto accountVerifyDto);
 
 }
