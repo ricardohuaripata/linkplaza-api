@@ -27,18 +27,6 @@ public class PageController {
     @Autowired
     private IPageService pageService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getPageById(@PathVariable("id") Long id) {
-        Page page = pageService.getPageById(id);
-
-        SuccessResponse<Page> successResponse = new SuccessResponse<>();
-        successResponse.setStatus("success");
-        successResponse.setMessage("Page found.");
-        successResponse.setData(page);
-
-        return new ResponseEntity<>(successResponse, HttpStatus.OK);
-    }
-
     @GetMapping("/{url}")
     public ResponseEntity<?> getPageByUrl(@PathVariable("url") String url) {
         Page page = pageService.getPageByUrl(url);

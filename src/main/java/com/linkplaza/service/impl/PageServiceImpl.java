@@ -52,9 +52,14 @@ public class PageServiceImpl implements IPageService {
     @Override
     public Page createPage(CreatePageDto createPageDto) {
         User user = userService.getAuthenticatedUser();
-        Date currentDate = new Date();
+
+        boolean alreadyExists = pageRepository.existsByUrl(createPageDto.getUrl());
+        if (alreadyExists) {
+            throw new IllegalArgumentException("The URL '" + createPageDto.getUrl() + "' is already taken.");
+        }
 
         Page page = new Page();
+        Date currentDate = new Date();
 
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setPropertyCondition(

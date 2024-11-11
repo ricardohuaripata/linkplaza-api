@@ -58,7 +58,7 @@ public class AuthServiceImpl implements IAuthService {
         String mailTo = savedUser.getEmail();
         String mailSubject = "Your code: " + verificationcode;
         String mailContent = emailService.buildAccountVerifyMail(verificationcode);
-        emailService.send(mailTo, mailSubject, mailContent);
+        //emailService.send(mailTo, mailSubject, mailContent);
 
         return savedUser;
     }

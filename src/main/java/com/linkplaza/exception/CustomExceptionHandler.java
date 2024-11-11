@@ -122,4 +122,10 @@ public class CustomExceptionHandler {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(), null);
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleInternalServerError(Exception e) {
+        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+                AppConstants.INTERNAL_SERVER_ERROR, null);
+    }
+
 }

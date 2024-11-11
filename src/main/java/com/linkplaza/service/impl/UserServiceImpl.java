@@ -85,7 +85,7 @@ public class UserServiceImpl implements IUserService {
         String mailTo = authUser.getEmail();
         String mailSubject = "Your code: " + verificationcode;
         String mailContent = emailService.buildAccountVerifyMail(verificationcode);
-        emailService.send(mailTo, mailSubject, mailContent);
+        //emailService.send(mailTo, mailSubject, mailContent);
 
     }
 
