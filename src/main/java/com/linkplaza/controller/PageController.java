@@ -2,6 +2,7 @@ package com.linkplaza.controller;
 
 import javax.validation.Valid;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import com.linkplaza.dto.AddSocialLinkDto;
 import com.linkplaza.dto.CreatePageDto;
 import com.linkplaza.dto.UpdatePageDto;
 import com.linkplaza.entity.Page;
+import com.linkplaza.response.PageResponse;
 import com.linkplaza.response.SuccessResponse;
 import com.linkplaza.service.IPageService;
 
@@ -31,10 +33,15 @@ public class PageController {
     public ResponseEntity<?> getPageByUrl(@PathVariable("url") String url) {
         Page page = pageService.getPageByUrl(url);
 
-        SuccessResponse<Page> successResponse = new SuccessResponse<>();
+        PageResponse pageResponse = new PageResponse();
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.map(page, pageResponse);
+        pageResponse.setUserVerified(page.getUser().isEmailVerified());
+
+        SuccessResponse<PageResponse> successResponse = new SuccessResponse<>();
         successResponse.setStatus("success");
         successResponse.setMessage("Page found.");
-        successResponse.setData(page);
+        successResponse.setData(pageResponse);
 
         return new ResponseEntity<>(successResponse, HttpStatus.OK);
     }

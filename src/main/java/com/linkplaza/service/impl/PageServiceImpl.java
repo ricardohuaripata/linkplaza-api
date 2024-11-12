@@ -120,7 +120,7 @@ public class PageServiceImpl implements IPageService {
                 .anyMatch(link -> link.getSocialPlatform().equals(socialPlatform));
 
         if (alreadyExists) {
-            throw new IllegalArgumentException("The page already has a link for this social platform.");
+            throw new IllegalArgumentException("The page has already a link for this social platform.");
         }
 
         SocialLink socialLink = new SocialLink();
@@ -150,8 +150,8 @@ public class PageServiceImpl implements IPageService {
         customLink.setTitle(addCustomLinkDto.getTitle());
         customLink.setPosition(0);
         customLink.setActive(true);
+        customLinkRepository.save(customLink);
 
-        page.getCustomLinks().add(customLinkRepository.save(customLink));
         page.setDateLastModified(new Date());
         return page;
     }
