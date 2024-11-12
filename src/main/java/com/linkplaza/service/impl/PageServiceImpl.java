@@ -61,11 +61,35 @@ public class PageServiceImpl implements IPageService {
         Page page = new Page();
         Date currentDate = new Date();
 
-        ModelMapper modelMapper = new ModelMapper();
-        modelMapper.getConfiguration().setPropertyCondition(
-                context -> context.getSource() != null && ((String) context.getSource()).trim().isEmpty() == false);
-        modelMapper.map(createPageDto, page);
+        if (createPageDto.getTitle() != null && createPageDto.getTitle().trim().isEmpty() == false) {
+            page.setTitle(createPageDto.getTitle());
+        }
+        if (createPageDto.getBio() != null && createPageDto.getBio().trim().isEmpty() == false) {
+            page.setBio(createPageDto.getBio());
+        }
+        if (createPageDto.getPictureUrl() != null && createPageDto.getPictureUrl().trim().isEmpty() == false) {
+            page.setPictureUrl(createPageDto.getPictureUrl());
+        }
+        if (createPageDto.getBackgroundColor() != null
+                && createPageDto.getBackgroundColor().trim().isEmpty() == false) {
+            page.setBackgroundColor(createPageDto.getBackgroundColor());
+        }
+        if (createPageDto.getFontColor() != null && createPageDto.getFontColor().trim().isEmpty() == false) {
+            page.setFontColor(createPageDto.getFontColor());
+        }
+        if (createPageDto.getButtonBackgroundColor() != null
+                && createPageDto.getButtonBackgroundColor().trim().isEmpty() == false) {
+            page.setButtonBackgroundColor(createPageDto.getButtonBackgroundColor());
+        }
+        if (createPageDto.getButtonFontColor() != null
+                && createPageDto.getButtonFontColor().trim().isEmpty() == false) {
+            page.setButtonFontColor(createPageDto.getButtonFontColor());
+        }
+        if (createPageDto.isButtonRounded() == false || createPageDto.isButtonRounded() == true) {
+            page.setButtonRounded(createPageDto.isButtonRounded());
+        }
 
+        page.setUrl(createPageDto.getUrl());
         page.setUser(user);
         page.setDateCreated(currentDate);
         page.setDateLastModified(currentDate);
@@ -82,7 +106,7 @@ public class PageServiceImpl implements IPageService {
             throw new IllegalArgumentException("Your are not the owner of this page.");
         }
 
-        if (updatePageDto.getUrl() != null && updatePageDto.getUrl().trim().isEmpty() == false) {
+        if (updatePageDto.getUrl() != null) {
             boolean alreadyExists = pageRepository.existsByUrl(updatePageDto.getUrl());
             if (alreadyExists) {
                 throw new IllegalArgumentException("The URL '" + updatePageDto.getUrl() + "' is already taken.");
@@ -97,6 +121,24 @@ public class PageServiceImpl implements IPageService {
         }
         if (updatePageDto.getPictureUrl() != null && updatePageDto.getPictureUrl().trim().isEmpty() == false) {
             page.setPictureUrl(updatePageDto.getPictureUrl());
+        }
+        if (updatePageDto.getBackgroundColor() != null
+                && updatePageDto.getBackgroundColor().trim().isEmpty() == false) {
+            page.setBackgroundColor(updatePageDto.getBackgroundColor());
+        }
+        if (updatePageDto.getFontColor() != null && updatePageDto.getFontColor().trim().isEmpty() == false) {
+            page.setFontColor(updatePageDto.getFontColor());
+        }
+        if (updatePageDto.getButtonBackgroundColor() != null
+                && updatePageDto.getButtonBackgroundColor().trim().isEmpty() == false) {
+            page.setButtonBackgroundColor(updatePageDto.getButtonBackgroundColor());
+        }
+        if (updatePageDto.getButtonFontColor() != null
+                && updatePageDto.getButtonFontColor().trim().isEmpty() == false) {
+            page.setButtonFontColor(updatePageDto.getButtonFontColor());
+        }
+        if (updatePageDto.isButtonRounded() == false || updatePageDto.isButtonRounded() == true) {
+            page.setButtonRounded(updatePageDto.isButtonRounded());
         }
 
         page.setDateLastModified(new Date());

@@ -45,7 +45,7 @@ public class UserController {
         successResponse.setMessage("Showing user info.");
         successResponse.setData(user);
 
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        return new ResponseEntity<>(successResponse, HttpStatus.OK);
     }
 
     @PostMapping("/account/verify")

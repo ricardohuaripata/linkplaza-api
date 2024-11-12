@@ -21,5 +21,6 @@ public class AppConstants {
 
     public static final String EMAIL_PATTERN = "^[\\w!#$%&’*+/=?`{|}~^-]+(?:\\.[\\w!#$%&’*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$";
     public static final String PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–[{}]:;',?/*~$^+=<>.]).{8,}$";
+    public static final String HEX_COLOR_PATTERN = "^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$";
 
 }

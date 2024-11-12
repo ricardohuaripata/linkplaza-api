@@ -22,6 +22,11 @@ public class PageResponse {
     private String title;
     private String bio;
     private String pictureUrl;
+    private String backgroundColor;
+    private String fontColor;
+    private String buttonBackgroundColor;
+    private String buttonFontColor;
+    private boolean buttonRounded;
     private Date dateCreated;
     private Date dateLastModified;
     private List<SocialLink> socialLinks;

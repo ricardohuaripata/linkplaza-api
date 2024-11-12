@@ -52,6 +52,21 @@ public class Page {
     @Column(columnDefinition = "TEXT")
     private String pictureUrl;
 
+    @Column(length = 7)
+    private String backgroundColor;
+
+    @Column(length = 7)
+    private String fontColor;
+
+    @Column(length = 7)
+    private String buttonBackgroundColor;
+
+    @Column(length = 7)
+    private String buttonFontColor;
+
+    @Column()
+    private boolean buttonRounded;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     private Date dateCreated;
 
