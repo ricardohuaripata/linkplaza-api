@@ -197,4 +197,14 @@ public class PageServiceImpl implements IPageService {
         return page;
     }
 
+    @Override
+    public void deletePage(Long pageId) {
+        Page page = getPageById(pageId);
+        User user = userService.getAuthenticatedUser();
+        if (!page.getUser().equals(user)) {
+            throw new IllegalArgumentException("Your are not the owner of this page.");
+        }
+        pageRepository.delete(page);
+    }
+
 }

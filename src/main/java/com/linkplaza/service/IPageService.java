@@ -20,4 +20,6 @@ public interface IPageService {
 
     Page addCustomLink(Long pageId, AddCustomLinkDto addCustomLinkDto);
 
+    void deletePage(Long pageId);
+
 }

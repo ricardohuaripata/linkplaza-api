@@ -6,6 +6,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -92,6 +93,17 @@ public class PageController {
         successResponse.setStatus("success");
         successResponse.setMessage("Custom link added successfully.");
         successResponse.setData(page);
+
+        return new ResponseEntity<>(successResponse, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deletePage(@PathVariable("id") Long id) {
+        pageService.deletePage(id);
+
+        SuccessResponse<Page> successResponse = new SuccessResponse<>();
+        successResponse.setStatus("success");
+        successResponse.setMessage("Page deleted successfully.");
 
         return new ResponseEntity<>(successResponse, HttpStatus.OK);
     }
