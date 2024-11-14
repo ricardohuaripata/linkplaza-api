@@ -1,5 +1,7 @@
 package com.linkplaza.controller;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,34 +32,40 @@ public class AuthController {
     private JwtTokenService jwtTokenService;
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signUp(@RequestBody @Valid SignUpDto signUpDto) {
+    public ResponseEntity<?> signUp(@RequestBody @Valid SignUpDto signUpDto, HttpServletResponse response) {
         User user = authService.signUp(signUpDto);
-
         String token = jwtTokenService.generateToken(new UserPrincipal(user), TokenType.AUTH_TOKEN);
-        HttpHeaders newHttpHeaders = new HttpHeaders();
-        newHttpHeaders.add(AppConstants.TOKEN_HEADER, token);
+
+        // añadir el token a una cookie
+        Cookie cookie = new Cookie(AppConstants.TOKEN_HEADER, token);
+        cookie.setHttpOnly(true); // para que la cookie no sea accesible desde JavaScript
+        // cookie.setSecure(true); // para que la cookie solo se envie a traves de https
+        cookie.setPath("/");
+        response.addCookie(cookie); // añadir la cookie a la respuesta
 
         SuccessResponse<User> successResponse = new SuccessResponse<>();
         successResponse.setStatus("success");
         successResponse.setMessage("Please, check your email to verify your account.");
         successResponse.setData(user);
-        return new ResponseEntity<>(successResponse, newHttpHeaders, HttpStatus.CREATED);
+        return new ResponseEntity<>(successResponse, HttpStatus.CREATED);
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<?> signIn(@RequestBody @Valid SignInDto signInDto) {
-
+    public ResponseEntity<?> signIn(@RequestBody @Valid SignInDto signInDto, HttpServletResponse response) {
         User user = authService.authenticateUser(signInDto);
-
         String token = jwtTokenService.generateToken(new UserPrincipal(user), TokenType.AUTH_TOKEN);
-        HttpHeaders newHttpHeaders = new HttpHeaders();
-        newHttpHeaders.add(AppConstants.TOKEN_HEADER, token);
+
+        Cookie cookie = new Cookie(AppConstants.TOKEN_HEADER, token);
+        cookie.setHttpOnly(true);
+        // cookie.setSecure(true);
+        cookie.setPath("/");
+        response.addCookie(cookie);
 
         SuccessResponse<User> successResponse = new SuccessResponse<>();
         successResponse.setStatus("success");
         successResponse.setMessage("Successful sign in.");
         successResponse.setData(user);
-        return new ResponseEntity<>(successResponse, newHttpHeaders, HttpStatus.OK);
+        return new ResponseEntity<>(successResponse, HttpStatus.OK);
     }
 
 }

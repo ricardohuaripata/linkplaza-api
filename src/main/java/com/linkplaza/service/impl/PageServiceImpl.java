@@ -54,7 +54,7 @@ public class PageServiceImpl implements IPageService {
 
         boolean alreadyExists = pageRepository.existsByUrl(createPageDto.getUrl());
         if (alreadyExists) {
-            throw new IllegalArgumentException("The URL '" + createPageDto.getUrl() + "' is already taken.");
+            throw new IllegalArgumentException("The URL is already taken.");
         }
 
         Page page = new Page();
@@ -108,7 +108,7 @@ public class PageServiceImpl implements IPageService {
         if (updatePageDto.getUrl() != null) {
             boolean alreadyExists = pageRepository.existsByUrl(updatePageDto.getUrl());
             if (alreadyExists) {
-                throw new IllegalArgumentException("The URL '" + updatePageDto.getUrl() + "' is already taken.");
+                throw new IllegalArgumentException("The URL is already taken.");
             }
             page.setUrl(updatePageDto.getUrl());
         }

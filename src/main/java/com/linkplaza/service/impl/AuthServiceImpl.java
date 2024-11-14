@@ -39,7 +39,7 @@ public class AuthServiceImpl implements IAuthService {
 
         Optional<User> existingUser = userRepository.findByEmail(signUpDto.getEmail());
         if (existingUser.isPresent()) {
-            throw new IllegalArgumentException("The email '" + signUpDto.getEmail() + "' is already taken.");
+            throw new IllegalArgumentException("The email is already taken.");
         }
 
         User newUser = new User();
