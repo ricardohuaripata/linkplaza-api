@@ -4,7 +4,6 @@ import com.linkplaza.common.AppConstants;
 import com.linkplaza.enumeration.TokenType;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,6 +14,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -27,29 +27,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private JwtTokenService jwtTokenService;
 
     @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+            FilterChain filterChain) throws ServletException, IOException {
 
         if (request.getMethod().equalsIgnoreCase(AppConstants.OPTIONS_HTTP_METHOD)) {
             response.setStatus(HttpStatus.OK.value());
         } else {
-
-            String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-
-            if (authorizationHeader == null || !authorizationHeader.startsWith(AppConstants.TOKEN_PREFIX)) {
-                filterChain.doFilter(request, response);
-                return;
+            Cookie[] cookies = request.getCookies();
+            String token = null;
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if (cookie.getName().equals(AppConstants.TOKEN_HEADER)) {
+                        token = cookie.getValue();
+                        break;
+                    }
+                }
             }
 
-            String token = authorizationHeader.substring(AppConstants.TOKEN_PREFIX.length());
-            String username = jwtTokenService.getSubjectFromToken(token);
+            if (token != null && 
+                jwtTokenService.isTokenValid(jwtTokenService.getSubjectFromToken(token), token, TokenType.AUTH_TOKEN)
+                && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            if (jwtTokenService.isTokenValid(username, token, TokenType.AUTH_TOKEN) &&
-                    SecurityContextHolder.getContext().getAuthentication() == null) {
-
+                String username = jwtTokenService.getSubjectFromToken(token);
                 List<GrantedAuthority> authorities = jwtTokenService.getAuthoritiesFromToken(token);
 
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username,
