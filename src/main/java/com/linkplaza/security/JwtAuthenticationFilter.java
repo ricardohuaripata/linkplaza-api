@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -26,9 +27,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private JwtTokenService jwtTokenService;
 
+    private static final List<String> EXCLUDED_PATHS = Arrays.asList(
+            "/api/v1/page/{url}",
+            "/api/v1/auth/signup",
+            "/api/v1/auth/signin");
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
+
+        String path = request.getRequestURI();
+        if (EXCLUDED_PATHS.stream().anyMatch(path::startsWith)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         if (request.getMethod().equalsIgnoreCase(AppConstants.OPTIONS_HTTP_METHOD)) {
             response.setStatus(HttpStatus.OK.value());
@@ -44,9 +56,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
 
-            if (token != null && 
-                jwtTokenService.isTokenValid(jwtTokenService.getSubjectFromToken(token), token, TokenType.AUTH_TOKEN)
-                && SecurityContextHolder.getContext().getAuthentication() == null) {
+            if (token != null &&
+                    jwtTokenService.isTokenValid(jwtTokenService.getSubjectFromToken(token), token,
+                            TokenType.AUTH_TOKEN)
+                    && SecurityContextHolder.getContext().getAuthentication() == null) {
 
                 String username = jwtTokenService.getSubjectFromToken(token);
                 List<GrantedAuthority> authorities = jwtTokenService.getAuthoritiesFromToken(token);

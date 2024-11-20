@@ -38,7 +38,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeRequests(auth -> auth
-                        .antMatchers(HttpMethod.GET, "/api/v1/test").permitAll()
                         .antMatchers(HttpMethod.GET, "/api/v1/page/{url}").permitAll()
                         .antMatchers(HttpMethod.POST, "/api/v1/auth/signup").permitAll()
                         .antMatchers(HttpMethod.POST, "/api/v1/auth/signin").permitAll()
