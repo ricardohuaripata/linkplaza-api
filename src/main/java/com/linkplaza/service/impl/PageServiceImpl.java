@@ -1,6 +1,9 @@
 package com.linkplaza.service.impl;
 
+import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -10,7 +13,9 @@ import org.springframework.stereotype.Service;
 import com.linkplaza.dto.AddCustomLinkDto;
 import com.linkplaza.dto.AddSocialLinkDto;
 import com.linkplaza.dto.CreatePageDto;
+import com.linkplaza.dto.SortSocialLinksDto;
 import com.linkplaza.dto.UpdatePageDto;
+import com.linkplaza.dto.UpdateSocialLinkDto;
 import com.linkplaza.entity.CustomLink;
 import com.linkplaza.entity.Page;
 import com.linkplaza.entity.SocialLink;
@@ -46,6 +51,12 @@ public class PageServiceImpl implements IPageService {
     public Page getPageByUrl(String url) {
         return pageRepository.findByUrl(url)
                 .orElseThrow(() -> new EntityNotFoundException("No page found with url '" + url + "'"));
+    }
+
+    @Override
+    public SocialLink getSocialLinkById(Long id) {
+        return socialLinkRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("No social link found with id " + id));
     }
 
     @Override
@@ -173,7 +184,7 @@ public class PageServiceImpl implements IPageService {
 
         page.getSocialLinks().add(socialLinkRepository.save(socialLink));
         page.setDateLastModified(new Date());
-        return page;
+        return pageRepository.save(page);
     }
 
     @Override
@@ -194,7 +205,78 @@ public class PageServiceImpl implements IPageService {
         customLinkRepository.save(customLink);
 
         page.setDateLastModified(new Date());
-        return page;
+        return pageRepository.save(page);
+    }
+
+    @Override
+    public Page updateSocialLink(Long socialLinkId, UpdateSocialLinkDto updateSocialLinkDto) {
+        SocialLink socialLink = getSocialLinkById(socialLinkId);
+        User user = userService.getAuthenticatedUser();
+        Page page = socialLink.getPage();
+
+        if (!page.getUser().equals(user)) {
+            throw new IllegalArgumentException("Your are not the owner of this page.");
+        }
+
+        if (updateSocialLinkDto.getUrl() != null && updateSocialLinkDto.getUrl().trim().isEmpty() == false) {
+            socialLink.setUrl(updateSocialLinkDto.getUrl());
+        }
+        if (updateSocialLinkDto.isActive() == false || updateSocialLinkDto.isActive() == true) {
+            socialLink.setActive(updateSocialLinkDto.isActive());
+        }
+        socialLinkRepository.save(socialLink);
+
+        page.setDateLastModified(new Date());
+        return pageRepository.save(page);
+    }
+
+    @Override
+    public Page sortSocialLinks(Long pageId, List<Long> ids) {
+        Page page = getPageById(pageId);
+        User user = userService.getAuthenticatedUser();
+        // obtener los SocialLinks existentes
+        List<SocialLink> socialLinks = page.getSocialLinks();
+
+        if (!page.getUser().equals(user)) {
+            throw new IllegalArgumentException("Your are not the owner of this page.");
+        }
+
+        // validar mismo tamaño de lista
+        if (socialLinks.size() != ids.size()) {
+            throw new IllegalArgumentException("Invalid list size.");
+        }
+
+        // validar que todos los IDs proporcionados existan y pertenezcan a la página
+        List<Long> existingIds = socialLinks.stream().map(SocialLink::getId).collect(Collectors.toList());
+        for (Long id : ids) {
+            if (!existingIds.contains(id)) {
+                throw new IllegalArgumentException("Invalid social link id: " + id);
+            }
+        }
+
+        // validar ids no repetidos
+        List<Long> uniqueIds = ids.stream().distinct().collect(Collectors.toList());
+        if (uniqueIds.size() != ids.size()) {
+            throw new IllegalArgumentException("Duplicate ids.");
+        }
+
+        for (int i = 0; i < ids.size(); i++) {
+            for (SocialLink socialLink : socialLinks) {
+                if (ids.get(i).equals(socialLink.getId())) {
+                    socialLink.setPosition(i);
+                    break;
+                }
+            }
+
+        }
+        // guardar nuevas posiciones
+        socialLinkRepository.saveAll(socialLinks);
+        page.setDateLastModified(new Date());
+
+        // ordenar la lista para la respuesta
+        socialLinks.sort(Comparator.comparingInt(SocialLink::getPosition));
+
+        return pageRepository.save(page);
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.linkplaza.response;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.linkplaza.entity.CustomLink;
 import com.linkplaza.entity.SocialLink;
 
@@ -27,7 +28,9 @@ public class PageResponse {
     private String buttonBackgroundColor;
     private String buttonFontColor;
     private boolean buttonRounded;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     private Date dateCreated;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     private Date dateLastModified;
     private List<SocialLink> socialLinks;
     private List<CustomLink> customLinks;

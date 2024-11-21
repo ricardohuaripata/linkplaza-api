@@ -1,5 +1,7 @@
 package com.linkplaza.controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.modelmapper.ModelMapper;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,8 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.linkplaza.dto.AddCustomLinkDto;
 import com.linkplaza.dto.AddSocialLinkDto;
 import com.linkplaza.dto.CreatePageDto;
+import com.linkplaza.dto.SortSocialLinksDto;
 import com.linkplaza.dto.UpdatePageDto;
+import com.linkplaza.dto.UpdateSocialLinkDto;
 import com.linkplaza.entity.Page;
+import com.linkplaza.entity.SocialLink;
 import com.linkplaza.response.PageResponse;
 import com.linkplaza.response.SuccessResponse;
 import com.linkplaza.service.IPageService;
@@ -79,6 +85,32 @@ public class PageController {
         SuccessResponse<Page> successResponse = new SuccessResponse<>();
         successResponse.setStatus("success");
         successResponse.setMessage("Social link added successfully.");
+        successResponse.setData(page);
+
+        return new ResponseEntity<>(successResponse, HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}/social-link/sort")
+    public ResponseEntity<?> sortSocialLinks(@PathVariable("id") Long id,
+            @RequestBody @Valid SortSocialLinksDto sortSocialLinksDto) {
+        Page page = pageService.sortSocialLinks(id, sortSocialLinksDto.getIds());
+
+        SuccessResponse<Page> successResponse = new SuccessResponse<>();
+        successResponse.setStatus("success");
+        successResponse.setMessage("Social links sorted successfully.");
+        successResponse.setData(page);
+
+        return new ResponseEntity<>(successResponse, HttpStatus.OK);
+    }
+
+    @PatchMapping("/social-link/{id}")
+    public ResponseEntity<?> updateSocialLink(@PathVariable("id") Long id,
+            @RequestBody @Valid UpdateSocialLinkDto updateSocialLinkDto) {
+        Page page = pageService.updateSocialLink(id, updateSocialLinkDto);
+
+        SuccessResponse<Page> successResponse = new SuccessResponse<>();
+        successResponse.setStatus("success");
+        successResponse.setMessage("Social link updated successfully.");
         successResponse.setData(page);
 
         return new ResponseEntity<>(successResponse, HttpStatus.OK);
