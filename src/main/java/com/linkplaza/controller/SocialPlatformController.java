@@ -14,7 +14,7 @@ import com.linkplaza.response.SuccessResponse;
 import com.linkplaza.service.ISocialPlatformService;
 
 @RestController
-@RequestMapping("/api/v1/socialPlatform")
+@RequestMapping("/api/v1/social-platform")
 public class SocialPlatformController {
     @Autowired
     private ISocialPlatformService socialPlatformService;

@@ -74,11 +74,11 @@ public class Page {
     private Date dateLastModified;
 
     @OneToMany(mappedBy = "page", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    @OrderBy("position ASC")
+    @OrderBy("position ASC, date_created DESC")
     private List<SocialLink> socialLinks;
 
     @OneToMany(mappedBy = "page", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    @OrderBy("position ASC")
+    @OrderBy("position ASC, date_created DESC")
     private List<CustomLink> customLinks;
 
 }

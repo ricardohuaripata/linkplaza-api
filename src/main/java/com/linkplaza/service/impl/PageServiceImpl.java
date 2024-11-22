@@ -181,8 +181,11 @@ public class PageServiceImpl implements IPageService {
         socialLink.setUrl(addSocialLinkDto.getUrl());
         socialLink.setPosition(0);
         socialLink.setActive(true);
+        socialLink.setDateCreated(new Date());
 
         page.getSocialLinks().add(socialLinkRepository.save(socialLink));
+        page.getSocialLinks().sort(
+                Comparator.comparingInt(SocialLink::getPosition).thenComparing(SocialLink::getDateCreated).reversed());
         page.setDateLastModified(new Date());
         return pageRepository.save(page);
     }
@@ -202,6 +205,7 @@ public class PageServiceImpl implements IPageService {
         customLink.setTitle(addCustomLinkDto.getTitle());
         customLink.setPosition(0);
         customLink.setActive(true);
+        customLink.setDateCreated(new Date());
         customLinkRepository.save(customLink);
 
         page.setDateLastModified(new Date());
