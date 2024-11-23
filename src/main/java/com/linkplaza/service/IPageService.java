@@ -5,8 +5,10 @@ import java.util.List;
 import com.linkplaza.dto.AddCustomLinkDto;
 import com.linkplaza.dto.AddSocialLinkDto;
 import com.linkplaza.dto.CreatePageDto;
+import com.linkplaza.dto.UpdateCustomLinkDto;
 import com.linkplaza.dto.UpdatePageDto;
 import com.linkplaza.dto.UpdateSocialLinkDto;
+import com.linkplaza.entity.CustomLink;
 import com.linkplaza.entity.Page;
 import com.linkplaza.entity.SocialLink;
 
@@ -18,6 +20,8 @@ public interface IPageService {
 
     SocialLink getSocialLinkById(Long id);
 
+    CustomLink getCustomLinkById(Long id);
+
     Page createPage(CreatePageDto createPageDto);
 
     Page updatePage(Long pageId, UpdatePageDto updatePageDto);
@@ -28,10 +32,16 @@ public interface IPageService {
 
     Page updateSocialLink(Long socialLinkId, UpdateSocialLinkDto updateSocialLinkDto);
 
+    Page updateCustomLink(Long customLinkId, UpdateCustomLinkDto updateCustomLinkDto);
+
     Page sortSocialLinks(Long pageId, List<Long> ids);
+
+    Page sortCustomLinks(Long pageId, List<Long> ids);
 
     void deletePage(Long pageId);
 
     Page deleteSocialLink(Long socialLinkId);
+
+    Page deleteCustomLink(Long customLinkId);
 
 }

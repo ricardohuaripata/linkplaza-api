@@ -15,7 +15,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SortSocialLinksDto {
+public class SortLinksDto {
     @NotNull
     private List<Long> ids;
 

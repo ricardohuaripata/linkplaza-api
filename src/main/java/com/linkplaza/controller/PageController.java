@@ -1,7 +1,5 @@
 package com.linkplaza.controller;
 
-import java.util.List;
-
 import javax.validation.Valid;
 
 import org.modelmapper.ModelMapper;
@@ -21,11 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.linkplaza.dto.AddCustomLinkDto;
 import com.linkplaza.dto.AddSocialLinkDto;
 import com.linkplaza.dto.CreatePageDto;
-import com.linkplaza.dto.SortSocialLinksDto;
+import com.linkplaza.dto.SortLinksDto;
+import com.linkplaza.dto.UpdateCustomLinkDto;
 import com.linkplaza.dto.UpdatePageDto;
 import com.linkplaza.dto.UpdateSocialLinkDto;
 import com.linkplaza.entity.Page;
-import com.linkplaza.entity.SocialLink;
 import com.linkplaza.response.PageResponse;
 import com.linkplaza.response.SuccessResponse;
 import com.linkplaza.service.IPageService;
@@ -36,6 +34,7 @@ public class PageController {
     @Autowired
     private IPageService pageService;
 
+    // PAGE ENDPOINTS
     @GetMapping("/{url}")
     public ResponseEntity<?> getPageByUrl(@PathVariable("url") String url) {
         Page page = pageService.getPageByUrl(url);
@@ -77,6 +76,18 @@ public class PageController {
         return new ResponseEntity<>(successResponse, HttpStatus.OK);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deletePage(@PathVariable("id") Long id) {
+        pageService.deletePage(id);
+
+        SuccessResponse<Page> successResponse = new SuccessResponse<>();
+        successResponse.setStatus("success");
+        successResponse.setMessage("Page deleted successfully.");
+
+        return new ResponseEntity<>(successResponse, HttpStatus.OK);
+    }
+
+    // SOCIAL LINK ENDPOINTS
     @PostMapping("/{id}/social-link")
     public ResponseEntity<?> addSocialLink(@PathVariable("id") Long id,
             @RequestBody @Valid AddSocialLinkDto addSocialLinkDto) {
@@ -92,8 +103,8 @@ public class PageController {
 
     @PutMapping("/{id}/social-link/sort")
     public ResponseEntity<?> sortSocialLinks(@PathVariable("id") Long id,
-            @RequestBody @Valid SortSocialLinksDto sortSocialLinksDto) {
-        Page page = pageService.sortSocialLinks(id, sortSocialLinksDto.getIds());
+            @RequestBody @Valid SortLinksDto sortLinksDto) {
+        Page page = pageService.sortSocialLinks(id, sortLinksDto.getIds());
 
         SuccessResponse<Page> successResponse = new SuccessResponse<>();
         successResponse.setStatus("success");
@@ -116,6 +127,19 @@ public class PageController {
         return new ResponseEntity<>(successResponse, HttpStatus.OK);
     }
 
+    @DeleteMapping("/social-link/{id}")
+    public ResponseEntity<?> deleteSocialLink(@PathVariable("id") Long id) {
+        Page page = pageService.deleteSocialLink(id);
+
+        SuccessResponse<Page> successResponse = new SuccessResponse<>();
+        successResponse.setStatus("success");
+        successResponse.setMessage("Social link deleted successfully.");
+        successResponse.setData(page);
+
+        return new ResponseEntity<>(successResponse, HttpStatus.OK);
+    }
+
+    // CUSTOM LINK ENDPOINTS
     @PostMapping("/{id}/custom-link")
     public ResponseEntity<?> addCustomLink(@PathVariable("id") Long id,
             @RequestBody @Valid AddCustomLinkDto addCustomLinkDto) {
@@ -129,24 +153,39 @@ public class PageController {
         return new ResponseEntity<>(successResponse, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletePage(@PathVariable("id") Long id) {
-        pageService.deletePage(id);
+    @PutMapping("/{id}/custom-link/sort")
+    public ResponseEntity<?> sortCustomLinks(@PathVariable("id") Long id,
+            @RequestBody @Valid SortLinksDto sortLinksDto) {
+        Page page = pageService.sortCustomLinks(id, sortLinksDto.getIds());
 
         SuccessResponse<Page> successResponse = new SuccessResponse<>();
         successResponse.setStatus("success");
-        successResponse.setMessage("Page deleted successfully.");
+        successResponse.setMessage("Custom links sorted successfully.");
+        successResponse.setData(page);
 
         return new ResponseEntity<>(successResponse, HttpStatus.OK);
     }
 
-    @DeleteMapping("/social-link/{id}")
-    public ResponseEntity<?> deleteSocialLink(@PathVariable("id") Long id) {
-        Page page = pageService.deleteSocialLink(id);
+    @PatchMapping("/custom-link/{id}")
+    public ResponseEntity<?> updateCustomLink(@PathVariable("id") Long id,
+            @RequestBody @Valid UpdateCustomLinkDto updateCustomLinkDto) {
+        Page page = pageService.updateCustomLink(id, updateCustomLinkDto);
 
         SuccessResponse<Page> successResponse = new SuccessResponse<>();
         successResponse.setStatus("success");
-        successResponse.setMessage("Social link deleted successfully.");
+        successResponse.setMessage("Custom link updated successfully.");
+        successResponse.setData(page);
+
+        return new ResponseEntity<>(successResponse, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/custom-link/{id}")
+    public ResponseEntity<?> deleteCustomLink(@PathVariable("id") Long id) {
+        Page page = pageService.deleteCustomLink(id);
+
+        SuccessResponse<Page> successResponse = new SuccessResponse<>();
+        successResponse.setStatus("success");
+        successResponse.setMessage("Custom link deleted successfully.");
         successResponse.setData(page);
 
         return new ResponseEntity<>(successResponse, HttpStatus.OK);

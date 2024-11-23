@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import com.linkplaza.dto.AddCustomLinkDto;
 import com.linkplaza.dto.AddSocialLinkDto;
 import com.linkplaza.dto.CreatePageDto;
-import com.linkplaza.dto.SortSocialLinksDto;
+import com.linkplaza.dto.UpdateCustomLinkDto;
 import com.linkplaza.dto.UpdatePageDto;
 import com.linkplaza.dto.UpdateSocialLinkDto;
 import com.linkplaza.entity.CustomLink;
@@ -57,6 +57,12 @@ public class PageServiceImpl implements IPageService {
     public SocialLink getSocialLinkById(Long id) {
         return socialLinkRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("No social link found with id " + id));
+    }
+
+    @Override
+    public CustomLink getCustomLinkById(Long id) {
+        return customLinkRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("No custom link found with id " + id));
     }
 
     @Override
@@ -184,8 +190,8 @@ public class PageServiceImpl implements IPageService {
         socialLink.setDateCreated(new Date());
 
         page.getSocialLinks().add(socialLinkRepository.save(socialLink));
-        page.getSocialLinks().sort(
-                Comparator.comparingInt(SocialLink::getPosition).thenComparing(SocialLink::getDateCreated).reversed());
+        page.getSocialLinks().sort(Comparator.comparingInt(SocialLink::getPosition)
+                .thenComparing(Comparator.comparing(SocialLink::getDateCreated).reversed()));
         page.setDateLastModified(new Date());
         return pageRepository.save(page);
     }
@@ -229,6 +235,32 @@ public class PageServiceImpl implements IPageService {
             socialLink.setActive(updateSocialLinkDto.getActive());
         }
         socialLinkRepository.save(socialLink);
+
+        page.setDateLastModified(new Date());
+        return pageRepository.save(page);
+    }
+
+    @Override
+    public Page updateCustomLink(Long customLinkId, UpdateCustomLinkDto updateCustomLinkDto) {
+        CustomLink customLink = getCustomLinkById(customLinkId);
+        User user = userService.getAuthenticatedUser();
+        Page page = customLink.getPage();
+
+        if (!page.getUser().equals(user)) {
+            throw new IllegalArgumentException("Your are not the owner of this page.");
+        }
+
+        if (updateCustomLinkDto.getUrl() != null && updateCustomLinkDto.getUrl().trim().isEmpty() == false) {
+            customLink.setUrl(updateCustomLinkDto.getUrl());
+        }
+
+        if (updateCustomLinkDto.getTitle() != null && updateCustomLinkDto.getTitle().trim().isEmpty() == false) {
+            customLink.setTitle(updateCustomLinkDto.getTitle());
+        }
+        if (updateCustomLinkDto.getActive() != null) {
+            customLink.setActive(updateCustomLinkDto.getActive());
+        }
+        customLinkRepository.save(customLink);
 
         page.setDateLastModified(new Date());
         return pageRepository.save(page);
@@ -284,6 +316,55 @@ public class PageServiceImpl implements IPageService {
     }
 
     @Override
+    public Page sortCustomLinks(Long pageId, List<Long> ids) {
+        Page page = getPageById(pageId);
+        User user = userService.getAuthenticatedUser();
+        // obtener los CustomLinks existentes
+        List<CustomLink> customLinks = page.getCustomLinks();
+
+        if (!page.getUser().equals(user)) {
+            throw new IllegalArgumentException("Your are not the owner of this page.");
+        }
+
+        // validar mismo tamaño de lista
+        if (customLinks.size() != ids.size()) {
+            throw new IllegalArgumentException("Invalid list size.");
+        }
+
+        // validar que todos los IDs proporcionados existan y pertenezcan a la página
+        List<Long> existingIds = customLinks.stream().map(CustomLink::getId).collect(Collectors.toList());
+        for (Long id : ids) {
+            if (!existingIds.contains(id)) {
+                throw new IllegalArgumentException("Invalid custom link id: " + id);
+            }
+        }
+
+        // validar ids no repetidos
+        List<Long> uniqueIds = ids.stream().distinct().collect(Collectors.toList());
+        if (uniqueIds.size() != ids.size()) {
+            throw new IllegalArgumentException("Duplicate ids.");
+        }
+
+        for (int i = 0; i < ids.size(); i++) {
+            for (CustomLink customLink : customLinks) {
+                if (ids.get(i).equals(customLink.getId())) {
+                    customLink.setPosition(i);
+                    break;
+                }
+            }
+
+        }
+        // guardar nuevas posiciones
+        customLinkRepository.saveAll(customLinks);
+        page.setDateLastModified(new Date());
+
+        // ordenar la lista para la respuesta
+        customLinks.sort(Comparator.comparingInt(CustomLink::getPosition));
+
+        return pageRepository.save(page);
+    }
+
+    @Override
     public void deletePage(Long pageId) {
         Page page = getPageById(pageId);
         User user = userService.getAuthenticatedUser();
@@ -302,6 +383,20 @@ public class PageServiceImpl implements IPageService {
             throw new IllegalArgumentException("Your are not the owner of this page.");
         }
         socialLinkRepository.delete(socialLink);
+        page.setDateLastModified(new Date());
+
+        return pageRepository.save(page);
+    }
+
+    @Override
+    public Page deleteCustomLink(Long customLinkId) {
+        CustomLink customLink = getCustomLinkById(customLinkId);
+        Page page = customLink.getPage();
+        User user = userService.getAuthenticatedUser();
+        if (!page.getUser().equals(user)) {
+            throw new IllegalArgumentException("Your are not the owner of this page.");
+        }
+        customLinkRepository.delete(customLink);
         page.setDateLastModified(new Date());
 
         return pageRepository.save(page);
