@@ -95,8 +95,8 @@ public class PageServiceImpl implements IPageService {
                 && createPageDto.getButtonFontColor().trim().isEmpty() == false) {
             page.setButtonFontColor(createPageDto.getButtonFontColor());
         }
-        if (createPageDto.isButtonRounded() == false || createPageDto.isButtonRounded() == true) {
-            page.setButtonRounded(createPageDto.isButtonRounded());
+        if (createPageDto.getButtonRounded() != null) {
+            page.setButtonRounded(createPageDto.getButtonRounded());
         }
 
         page.setUrl(createPageDto.getUrl());
@@ -147,8 +147,8 @@ public class PageServiceImpl implements IPageService {
                 && updatePageDto.getButtonFontColor().trim().isEmpty() == false) {
             page.setButtonFontColor(updatePageDto.getButtonFontColor());
         }
-        if (updatePageDto.isButtonRounded() == false || updatePageDto.isButtonRounded() == true) {
-            page.setButtonRounded(updatePageDto.isButtonRounded());
+        if (updatePageDto.getButtonRounded() != null) {
+            page.setButtonRounded(updatePageDto.getButtonRounded());
         }
 
         page.setDateLastModified(new Date());
@@ -225,8 +225,8 @@ public class PageServiceImpl implements IPageService {
         if (updateSocialLinkDto.getUrl() != null && updateSocialLinkDto.getUrl().trim().isEmpty() == false) {
             socialLink.setUrl(updateSocialLinkDto.getUrl());
         }
-        if (updateSocialLinkDto.isActive() == false || updateSocialLinkDto.isActive() == true) {
-            socialLink.setActive(updateSocialLinkDto.isActive());
+        if (updateSocialLinkDto.getActive() != null) {
+            socialLink.setActive(updateSocialLinkDto.getActive());
         }
         socialLinkRepository.save(socialLink);
 
@@ -291,6 +291,20 @@ public class PageServiceImpl implements IPageService {
             throw new IllegalArgumentException("Your are not the owner of this page.");
         }
         pageRepository.delete(page);
+    }
+
+    @Override
+    public Page deleteSocialLink(Long socialLinkId) {
+        SocialLink socialLink = getSocialLinkById(socialLinkId);
+        Page page = socialLink.getPage();
+        User user = userService.getAuthenticatedUser();
+        if (!page.getUser().equals(user)) {
+            throw new IllegalArgumentException("Your are not the owner of this page.");
+        }
+        socialLinkRepository.delete(socialLink);
+        page.setDateLastModified(new Date());
+
+        return pageRepository.save(page);
     }
 
 }

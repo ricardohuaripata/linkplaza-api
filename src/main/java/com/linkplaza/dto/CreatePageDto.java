@@ -47,6 +47,6 @@ public class CreatePageDto {
     @Pattern(regexp = AppConstants.HEX_COLOR_PATTERN, message = "Color must be a valid hexadecimal value (e.g. #RRGGBB or #RGB)")
     private String buttonFontColor;
 
-    private boolean buttonRounded;
+    private Boolean buttonRounded;
 
 }

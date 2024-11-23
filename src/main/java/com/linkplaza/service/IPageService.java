@@ -32,4 +32,6 @@ public interface IPageService {
 
     void deletePage(Long pageId);
 
+    Page deleteSocialLink(Long socialLinkId);
+
 }

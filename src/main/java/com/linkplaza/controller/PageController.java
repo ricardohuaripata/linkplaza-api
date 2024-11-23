@@ -140,4 +140,16 @@ public class PageController {
         return new ResponseEntity<>(successResponse, HttpStatus.OK);
     }
 
+    @DeleteMapping("/social-link/{id}")
+    public ResponseEntity<?> deleteSocialLink(@PathVariable("id") Long id) {
+        Page page = pageService.deleteSocialLink(id);
+
+        SuccessResponse<Page> successResponse = new SuccessResponse<>();
+        successResponse.setStatus("success");
+        successResponse.setMessage("Social link deleted successfully.");
+        successResponse.setData(page);
+
+        return new ResponseEntity<>(successResponse, HttpStatus.OK);
+    }
+
 }

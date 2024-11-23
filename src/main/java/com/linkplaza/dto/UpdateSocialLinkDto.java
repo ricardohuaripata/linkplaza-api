@@ -17,6 +17,6 @@ public class UpdateSocialLinkDto {
     @Size(max = 6400)
     private String url;
 
-    private boolean isActive;
+    private Boolean active;
 
 }
