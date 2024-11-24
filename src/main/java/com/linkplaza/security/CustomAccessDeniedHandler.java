@@ -26,14 +26,14 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
             HttpServletResponse response,
             AccessDeniedException exception) throws IOException, ServletException {
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .statusCode(HttpStatus.UNAUTHORIZED.value())
-                .status(HttpStatus.UNAUTHORIZED)
-                .message(AppConstants.ACCESS_DENIED)
-                .reason(HttpStatus.UNAUTHORIZED.getReasonPhrase())
+                .statusCode(HttpStatus.FORBIDDEN.value())
+                .status(HttpStatus.FORBIDDEN)
+                .message(AppConstants.FORBIDDEN)
+                .reason(HttpStatus.FORBIDDEN.getReasonPhrase())
                 .timestamp(new Date())
                 .build();
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.setStatus(HttpStatus.FORBIDDEN.value());
         OutputStream outputStream = response.getOutputStream();
         ObjectMapper mapper = new ObjectMapper();
         mapper.writeValue(outputStream, errorResponse);

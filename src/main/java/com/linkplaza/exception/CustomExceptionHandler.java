@@ -71,7 +71,7 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException e) {
-        return buildErrorResponse(HttpStatus.UNAUTHORIZED, AppConstants.ACCESS_DENIED, null);
+        return buildErrorResponse(HttpStatus.FORBIDDEN, e.getMessage(), null);
     }
 
     @ExceptionHandler(BadCredentialsException.class)

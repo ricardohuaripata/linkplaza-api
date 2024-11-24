@@ -8,7 +8,7 @@ import com.linkplaza.response.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,20 +19,20 @@ import java.io.OutputStream;
 import java.util.Date;
 
 @Component
-public class CustomAuthenticationEntryPoint extends Http403ForbiddenEntryPoint {
+public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request,
             HttpServletResponse response,
             AuthenticationException exception) throws IOException {
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .statusCode(HttpStatus.FORBIDDEN.value())
-                .status(HttpStatus.FORBIDDEN)
-                .message(AppConstants.FORBIDDEN)
-                .reason(HttpStatus.FORBIDDEN.getReasonPhrase())
+                .statusCode(HttpStatus.UNAUTHORIZED.value())
+                .status(HttpStatus.UNAUTHORIZED)
+                .message(AppConstants.UNAUTHORIZED)
+                .reason(HttpStatus.UNAUTHORIZED.getReasonPhrase())
                 .timestamp(new Date())
                 .build();
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setStatus(HttpStatus.FORBIDDEN.value());
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
         OutputStream outputStream = response.getOutputStream();
         ObjectMapper mapper = new ObjectMapper();
         mapper.writeValue(outputStream, errorResponse);

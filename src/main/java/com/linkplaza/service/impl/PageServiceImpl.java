@@ -8,8 +8,10 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import com.linkplaza.common.AppConstants;
 import com.linkplaza.dto.AddCustomLinkDto;
 import com.linkplaza.dto.AddSocialLinkDto;
 import com.linkplaza.dto.CreatePageDto;
@@ -119,7 +121,7 @@ public class PageServiceImpl implements IPageService {
         User user = userService.getAuthenticatedUser();
 
         if (!page.getUser().equals(user)) {
-            throw new IllegalArgumentException("Your are not the owner of this page.");
+            throw new AccessDeniedException(AppConstants.NOT_PAGE_OWNER);
         }
 
         if (updatePageDto.getUrl() != null) {
@@ -170,7 +172,7 @@ public class PageServiceImpl implements IPageService {
         User user = userService.getAuthenticatedUser();
 
         if (!page.getUser().equals(user)) {
-            throw new IllegalArgumentException("Your are not the owner of this page.");
+            throw new AccessDeniedException(AppConstants.NOT_PAGE_OWNER);
         }
 
         // verificar si ya existe un SocialLink con la misma SocialPlatform
@@ -202,7 +204,7 @@ public class PageServiceImpl implements IPageService {
         User user = userService.getAuthenticatedUser();
 
         if (!page.getUser().equals(user)) {
-            throw new IllegalArgumentException("Your are not the owner of this page.");
+            throw new AccessDeniedException(AppConstants.NOT_PAGE_OWNER);
         }
 
         CustomLink customLink = new CustomLink();
@@ -225,7 +227,7 @@ public class PageServiceImpl implements IPageService {
         Page page = socialLink.getPage();
 
         if (!page.getUser().equals(user)) {
-            throw new IllegalArgumentException("Your are not the owner of this page.");
+            throw new AccessDeniedException(AppConstants.NOT_PAGE_OWNER);
         }
 
         if (updateSocialLinkDto.getUrl() != null && updateSocialLinkDto.getUrl().trim().isEmpty() == false) {
@@ -247,7 +249,7 @@ public class PageServiceImpl implements IPageService {
         Page page = customLink.getPage();
 
         if (!page.getUser().equals(user)) {
-            throw new IllegalArgumentException("Your are not the owner of this page.");
+            throw new AccessDeniedException(AppConstants.NOT_PAGE_OWNER);
         }
 
         if (updateCustomLinkDto.getUrl() != null && updateCustomLinkDto.getUrl().trim().isEmpty() == false) {
@@ -274,7 +276,7 @@ public class PageServiceImpl implements IPageService {
         List<SocialLink> socialLinks = page.getSocialLinks();
 
         if (!page.getUser().equals(user)) {
-            throw new IllegalArgumentException("Your are not the owner of this page.");
+            throw new AccessDeniedException(AppConstants.NOT_PAGE_OWNER);
         }
 
         // validar mismo tamaño de lista
@@ -323,7 +325,7 @@ public class PageServiceImpl implements IPageService {
         List<CustomLink> customLinks = page.getCustomLinks();
 
         if (!page.getUser().equals(user)) {
-            throw new IllegalArgumentException("Your are not the owner of this page.");
+            throw new AccessDeniedException(AppConstants.NOT_PAGE_OWNER);
         }
 
         // validar mismo tamaño de lista
@@ -369,7 +371,7 @@ public class PageServiceImpl implements IPageService {
         Page page = getPageById(pageId);
         User user = userService.getAuthenticatedUser();
         if (!page.getUser().equals(user)) {
-            throw new IllegalArgumentException("Your are not the owner of this page.");
+            throw new AccessDeniedException(AppConstants.NOT_PAGE_OWNER);
         }
         pageRepository.delete(page);
     }
@@ -380,7 +382,7 @@ public class PageServiceImpl implements IPageService {
         Page page = socialLink.getPage();
         User user = userService.getAuthenticatedUser();
         if (!page.getUser().equals(user)) {
-            throw new IllegalArgumentException("Your are not the owner of this page.");
+            throw new AccessDeniedException(AppConstants.NOT_PAGE_OWNER);
         }
         socialLinkRepository.delete(socialLink);
         page.setDateLastModified(new Date());
@@ -394,7 +396,7 @@ public class PageServiceImpl implements IPageService {
         Page page = customLink.getPage();
         User user = userService.getAuthenticatedUser();
         if (!page.getUser().equals(user)) {
-            throw new IllegalArgumentException("Your are not the owner of this page.");
+            throw new AccessDeniedException(AppConstants.NOT_PAGE_OWNER);
         }
         customLinkRepository.delete(customLink);
         page.setDateLastModified(new Date());
