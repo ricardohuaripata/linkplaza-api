@@ -24,6 +24,7 @@ import com.linkplaza.dto.UpdateCustomLinkDto;
 import com.linkplaza.dto.UpdatePageDto;
 import com.linkplaza.dto.UpdateSocialLinkDto;
 import com.linkplaza.entity.Page;
+import com.linkplaza.entity.User;
 import com.linkplaza.response.PageResponse;
 import com.linkplaza.response.SuccessResponse;
 import com.linkplaza.service.IPageService;
@@ -78,11 +79,12 @@ public class PageController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePage(@PathVariable("id") Long id) {
-        pageService.deletePage(id);
+        User user = pageService.deletePage(id);
 
-        SuccessResponse<Page> successResponse = new SuccessResponse<>();
+        SuccessResponse<User> successResponse = new SuccessResponse<>();
         successResponse.setStatus("success");
         successResponse.setMessage("Page deleted successfully.");
+        successResponse.setData(user);
 
         return new ResponseEntity<>(successResponse, HttpStatus.OK);
     }

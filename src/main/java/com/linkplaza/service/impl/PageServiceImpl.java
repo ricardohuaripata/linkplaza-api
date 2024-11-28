@@ -367,13 +367,14 @@ public class PageServiceImpl implements IPageService {
     }
 
     @Override
-    public void deletePage(Long pageId) {
+    public User deletePage(Long pageId) {
         Page page = getPageById(pageId);
         User user = userService.getAuthenticatedUser();
         if (!page.getUser().equals(user)) {
             throw new AccessDeniedException(AppConstants.NOT_PAGE_OWNER);
         }
         pageRepository.delete(page);
+        return user;
     }
 
     @Override

@@ -11,6 +11,7 @@ import com.linkplaza.dto.UpdateSocialLinkDto;
 import com.linkplaza.entity.CustomLink;
 import com.linkplaza.entity.Page;
 import com.linkplaza.entity.SocialLink;
+import com.linkplaza.entity.User;
 
 public interface IPageService {
 
@@ -38,7 +39,7 @@ public interface IPageService {
 
     Page sortCustomLinks(Long pageId, List<Long> ids);
 
-    void deletePage(Long pageId);
+    User deletePage(Long pageId);
 
     Page deleteSocialLink(Long socialLinkId);
 
