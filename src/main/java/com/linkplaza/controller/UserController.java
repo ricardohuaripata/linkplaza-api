@@ -1,10 +1,13 @@
 package com.linkplaza.controller;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,7 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.linkplaza.dto.AccountVerifyDto;
+import com.linkplaza.common.AppConstants;
+import com.linkplaza.dto.VerifyCodeDto;
 import com.linkplaza.entity.User;
 import com.linkplaza.response.SuccessResponse;
 import com.linkplaza.service.IUserService;
@@ -27,30 +31,41 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserById(@PathVariable("id") Long id) {
         User user = userService.getUserById(id);
-
         SuccessResponse<User> successResponse = new SuccessResponse<>();
         successResponse.setStatus("success");
         successResponse.setMessage("User found.");
         successResponse.setData(user);
-
         return new ResponseEntity<>(successResponse, HttpStatus.OK);
     }
 
     @GetMapping("/account/info")
     public ResponseEntity<?> getAuthUserInfo() {
         User user = userService.getAuthenticatedUser();
-
         SuccessResponse<User> successResponse = new SuccessResponse<>();
         successResponse.setStatus("success");
         successResponse.setMessage("Showing user info.");
         successResponse.setData(user);
+        return new ResponseEntity<>(successResponse, HttpStatus.OK);
+    }
 
+    @PostMapping("/account/signout")
+    public ResponseEntity<?> signOut(HttpServletResponse response) {
+        // eliminar la cookie del token
+        Cookie cookie = new Cookie(AppConstants.TOKEN_HEADER, null);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0); // establece la cookie para que expire inmediatamente
+        response.addCookie(cookie); // añadir la cookie a la respuesta
+
+        SuccessResponse<?> successResponse = new SuccessResponse<>();
+        successResponse.setStatus("success");
+        successResponse.setMessage("Successfully signed out.");
         return new ResponseEntity<>(successResponse, HttpStatus.OK);
     }
 
     @PostMapping("/account/verify")
-    public ResponseEntity<?> accountVerify(@RequestBody @Valid AccountVerifyDto accountVerifyDto) {
-        User user = userService.accountVerify(accountVerifyDto);
+    public ResponseEntity<?> verifyAccount(@RequestBody @Valid VerifyCodeDto verifyCodeDto) {
+        User user = userService.verifyAccount(verifyCodeDto);
         SuccessResponse<User> successResponse = new SuccessResponse<>();
         successResponse.setStatus("success");
         successResponse.setMessage("Account verified successfully.");
@@ -58,10 +73,37 @@ public class UserController {
         return new ResponseEntity<>(successResponse, HttpStatus.OK);
     }
 
-    @PostMapping("/account/send-verification-code")
+    @DeleteMapping("/account")
+    public ResponseEntity<?> deleteAccount(HttpServletResponse response,
+            @RequestBody @Valid VerifyCodeDto verifyCodeDto) {
+
+        userService.deleteAccount(verifyCodeDto);
+
+        Cookie cookie = new Cookie(AppConstants.TOKEN_HEADER, null);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+
+        SuccessResponse<?> successResponse = new SuccessResponse<>();
+        successResponse.setStatus("success");
+        successResponse.setMessage("Account deleted successfully.");
+        return new ResponseEntity<>(successResponse, HttpStatus.OK);
+    }
+
+    @PostMapping("/account/send-account-verification-code")
     public ResponseEntity<?> sendAccountVerificationCode() {
         userService.sendAccountVerificationCode();
-        SuccessResponse<User> successResponse = new SuccessResponse<>();
+        SuccessResponse<?> successResponse = new SuccessResponse<>();
+        successResponse.setStatus("success");
+        successResponse.setMessage("A temporary verification code has sent to your email.");
+        return new ResponseEntity<>(successResponse, HttpStatus.OK);
+    }
+
+    @PostMapping("/account/send-delete-account-verification-code")
+    public ResponseEntity<?> sendDeleteAccountVerificationCode() {
+        userService.sendDeleteAccountVerificationCode();
+        SuccessResponse<?> successResponse = new SuccessResponse<>();
         successResponse.setStatus("success");
         successResponse.setMessage("A temporary verification code has sent to your email.");
         return new ResponseEntity<>(successResponse, HttpStatus.OK);

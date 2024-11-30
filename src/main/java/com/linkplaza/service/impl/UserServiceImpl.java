@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.linkplaza.common.AppConstants;
-import com.linkplaza.dto.AccountVerifyDto;
+import com.linkplaza.dto.VerifyCodeDto;
 import com.linkplaza.entity.User;
 import com.linkplaza.entity.VerificationCode;
 import com.linkplaza.enumeration.VerificationCodeType;
@@ -49,12 +49,12 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     @Transactional
-    public User accountVerify(AccountVerifyDto accountVerifyDto) {
+    public User verifyAccount(VerifyCodeDto verifyCodeDto) {
         User authUser = getAuthenticatedUser();
 
         Optional<VerificationCode> verificationCode = verificationCodeRepository
                 .findFirstByUserAndCodeAndTypeAndUsedFalseOrderByDateExpirationDesc(authUser,
-                        accountVerifyDto.getVerificationCode(), VerificationCodeType.ACCOUNT_VERIFICATION.name());
+                        verifyCodeDto.getVerificationCode(), VerificationCodeType.ACCOUNT_VERIFICATION.name());
         // validar existencia del codigo
         if (verificationCode.isEmpty()) {
             throw new IllegalArgumentException("Wrong email or verification code.");
@@ -73,6 +73,27 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     @Transactional
+    public void deleteAccount(VerifyCodeDto verifyCodeDto) {
+        User authUser = getAuthenticatedUser();
+
+        Optional<VerificationCode> verificationCode = verificationCodeRepository
+                .findFirstByUserAndCodeAndTypeAndUsedFalseOrderByDateExpirationDesc(authUser,
+                        verifyCodeDto.getVerificationCode(), VerificationCodeType.DELETE_ACCOUNT_VERIFICATION.name());
+        // validar existencia del codigo
+        if (verificationCode.isEmpty()) {
+            throw new IllegalArgumentException("Wrong email or verification code.");
+        }
+        // validar caducidad del codigo
+        if (verificationCode.get().getDateExpiration().before(new Date())) {
+            throw new IllegalStateException("The verification code has expired.");
+        }
+        // si todo es correcto:
+        verificationCodeRepository.deleteByUser(authUser);
+        userRepository.delete(authUser);
+    }
+
+    @Override
+    @Transactional
     public void sendAccountVerificationCode() {
         User authUser = getAuthenticatedUser();
 
@@ -84,8 +105,23 @@ public class UserServiceImpl implements IUserService {
 
         String mailTo = authUser.getEmail();
         String mailSubject = "Your code: " + verificationcode;
-        String mailContent = emailService.buildAccountVerifyMail(verificationcode);
-        //emailService.send(mailTo, mailSubject, mailContent);
+        String mailContent = emailService.buildAccountVerificationMail(verificationcode);
+        // emailService.send(mailTo, mailSubject, mailContent);
+
+    }
+
+    @Override
+    @Transactional
+    public void sendDeleteAccountVerificationCode() {
+        User authUser = getAuthenticatedUser();
+
+        String verificationcode = generateVerificationCode(authUser,
+                VerificationCodeType.DELETE_ACCOUNT_VERIFICATION.name());
+
+        String mailTo = authUser.getEmail();
+        String mailSubject = "Your code: " + verificationcode;
+        String mailContent = emailService.buildDeleteAccountVerificationMail(verificationcode);
+        // emailService.send(mailTo, mailSubject, mailContent);
 
     }
 

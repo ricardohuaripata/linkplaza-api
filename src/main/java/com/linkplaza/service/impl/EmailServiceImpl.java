@@ -40,8 +40,14 @@ public class EmailServiceImpl implements IEmailService {
     }
 
     @Override
-    public String buildAccountVerifyMail(String verificationCode) {
+    public String buildAccountVerificationMail(String verificationCode) {
         return "<p style=\"margin-bottom: 32px;\">Use the code below to verify your account. It will expire in 15 minutes.</p>"
+                + "<h1>" + verificationCode + "</h1>";
+    }
+
+    @Override
+    public String buildDeleteAccountVerificationMail(String verificationCode) {
+        return "<p style=\"margin-bottom: 32px;\">Use the code below to confirm that you want to delete your account. It will expire in 15 minutes.</p>"
                 + "<h1>" + verificationCode + "</h1>";
     }
 

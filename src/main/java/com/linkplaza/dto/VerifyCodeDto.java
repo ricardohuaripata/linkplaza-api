@@ -13,7 +13,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AccountVerifyDto {
+public class VerifyCodeDto {
     @NotBlank
     private String verificationCode;
 }
