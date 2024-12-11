@@ -1,11 +1,8 @@
 package com.linkplaza.controller;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -21,10 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.linkplaza.entity.Visit;
 import com.linkplaza.service.IEventService;
 import com.linkplaza.vo.PageAnalytic;
-import com.linkplaza.vo.VisitCount;
 
 @RestController
 @RequestMapping("/api/v1/event")

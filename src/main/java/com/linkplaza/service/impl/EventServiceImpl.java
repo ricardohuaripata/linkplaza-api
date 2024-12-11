@@ -1,11 +1,11 @@
 package com.linkplaza.service.impl;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,7 +19,7 @@ import com.linkplaza.repository.VisitRepository;
 import com.linkplaza.service.IEventService;
 import com.linkplaza.service.IPageService;
 import com.linkplaza.vo.PageAnalytic;
-import com.linkplaza.vo.VisitCount;
+import com.linkplaza.vo.Timeserie;
 
 @Service
 public class EventServiceImpl implements IEventService {
@@ -43,36 +43,55 @@ public class EventServiceImpl implements IEventService {
     public PageAnalytic getPageAnalytic(Long pageId, Date startDate, Date endDate) {
         Page page = pageService.getPageById(pageId);
 
-        // Crear un mapa para contar las visitas por fecha
-        Map<String, VisitCount> visitsCount = new LinkedHashMap<>();
+        List<Timeserie> timeseries = new ArrayList<>();
 
-        // Inicializar el calendario para recorrer las fechas
+        // inicializar el calendario para recorrer las fechas
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(startDate);
 
-        // Recorrer cada día entre startDate y endDate
+        // recorrer cada dia entre startDate y endDate
         while (!calendar.getTime().after(endDate)) {
-            String dateKey = new SimpleDateFormat("dd-MM-yyyy").format(calendar.getTime());
-            visitsCount.put(dateKey, new VisitCount(0L, 0L)); // Inicializar con 0 visitas y 0 visitas únicas
-            calendar.add(Calendar.DAY_OF_MONTH, 1); // Avanzar un día
+            String date = new SimpleDateFormat("dd-MM-yyyy").format(calendar.getTime());
+            Timeserie timeserie = new Timeserie();
+            timeserie.setViews(0L);
+            timeserie.setUniqueViews(0L);
+            timeserie.setDate(date);
+            timeseries.add(timeserie);
+
+            calendar.add(Calendar.DAY_OF_MONTH, 1); // avanza un dia
         }
 
-        // Contar las visitas por fecha
+        // obtener los registros de visitas del rango de fechas
         List<Visit> visits = visitRepository.findByPageAndDateCreatedBetween(page, startDate, endDate);
-        Set<String> uniqueIps = new HashSet<>();
-        for (Visit visit : visits) {
-            String dateKey = new SimpleDateFormat("dd-MM-yyyy").format(visit.getDateCreated());
-            visitsCount.get(dateKey).setViews(visitsCount.get(dateKey).getViews() + 1);
 
-            // Agregar IP a la lista de únicas
-            uniqueIps.add(visit.getIpAddress());
-            visitsCount.get(dateKey).setUniqueViews((long) uniqueIps.size());
+        // crear un mapa para rastrear las ip unicas por fecha
+        Map<String, Set<String>> uniqueIpMap = new HashMap<>();
+
+        for (Visit visit : visits) {
+            String date = new SimpleDateFormat("dd-MM-yyyy").format(visit.getDateCreated());
+            uniqueIpMap.putIfAbsent(date, new HashSet<>());
+
+            for (Timeserie timeserie : timeseries) {
+                if (timeserie.getDate().equals(date)) {
+                    timeserie.setViews(timeserie.getViews() + 1);
+                    uniqueIpMap.get(date).add(visit.getIpAddress());
+                    break;
+                }
+            }
+
+        }
+
+        for (Timeserie timeserie : timeseries) {
+            Set<String> uniqueIps = uniqueIpMap.get(timeserie.getDate());
+            if (uniqueIps != null) {
+                timeserie.setUniqueViews((long) uniqueIps.size());
+            }
         }
 
         PageAnalytic pageAnalytic = new PageAnalytic();
-        pageAnalytic.setTimeseries(visitsCount);
         pageAnalytic.setTotalViews(visitRepository.countByPage(page));
         pageAnalytic.setTotalUniqueViews(visitRepository.countDistinctByIpAddressAndPage(page));
+        pageAnalytic.setTimeseries(timeseries);
 
         return pageAnalytic;
 

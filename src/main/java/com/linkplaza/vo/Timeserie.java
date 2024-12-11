@@ -9,7 +9,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class VisitCount {
+public class Timeserie {
     private Long views;
     private Long uniqueViews;
+    private String date;
 }

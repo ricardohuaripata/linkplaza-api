@@ -1,6 +1,6 @@
 package com.linkplaza.vo;
 
-import java.util.Map;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,6 +14,6 @@ import lombok.Setter;
 public class PageAnalytic {
     private Long totalViews;
     private Long totalUniqueViews;
-    private Map<String, VisitCount> timeseries;
+    private List<Timeserie> timeseries;
 
 }
