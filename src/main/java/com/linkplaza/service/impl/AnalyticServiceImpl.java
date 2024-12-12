@@ -16,13 +16,13 @@ import org.springframework.stereotype.Service;
 import com.linkplaza.entity.Page;
 import com.linkplaza.entity.Visit;
 import com.linkplaza.repository.VisitRepository;
-import com.linkplaza.service.IEventService;
+import com.linkplaza.service.IAnalyticService;
 import com.linkplaza.service.IPageService;
 import com.linkplaza.vo.PageAnalytic;
 import com.linkplaza.vo.Timeserie;
 
 @Service
-public class EventServiceImpl implements IEventService {
+public class AnalyticServiceImpl implements IAnalyticService {
     @Autowired
     private VisitRepository visitRepository;
     @Autowired

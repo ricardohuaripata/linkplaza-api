@@ -18,14 +18,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.linkplaza.service.IEventService;
+import com.linkplaza.service.IAnalyticService;
 import com.linkplaza.vo.PageAnalytic;
 
 @RestController
-@RequestMapping("/api/v1/event")
-public class EventController {
+@RequestMapping("/api/v1/analytic")
+public class AnalyticController {
     @Autowired
-    private IEventService eventService;
+    private IAnalyticService analyticService;
 
     @Value("${api.key}")
     private String apiKey;
@@ -38,7 +38,7 @@ public class EventController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         String ipAddress = getClientIp(request);
-        eventService.logVisit(pageId, ipAddress);
+        analyticService.logVisit(pageId, ipAddress);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -67,7 +67,7 @@ public class EventController {
             end = new Date(); // fecha actual
         }
 
-        PageAnalytic pageAnalytic = eventService.getPageAnalytic(pageId, start, end);
+        PageAnalytic pageAnalytic = analyticService.getPageAnalytic(pageId, start, end);
         return new ResponseEntity<>(pageAnalytic, HttpStatus.OK);
     }
 
