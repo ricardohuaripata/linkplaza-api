@@ -1,5 +1,7 @@
 package com.linkplaza.vo;
 
+import com.linkplaza.entity.CustomLink;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,10 +11,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Timeserie {
-    private Long views;
-    private Long uniqueViews;
+public class CustomLinkAnalytic {
+    private CustomLink customLink;
     private Long clicks;
     private Long uniqueClicks;
-    private String date;
 }

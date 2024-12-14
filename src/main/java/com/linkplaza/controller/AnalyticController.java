@@ -42,7 +42,19 @@ public class AnalyticController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/visit")
+    @PostMapping("/custom-link-click")
+    public ResponseEntity<?> logCustomLinkClick(@RequestParam Long customLinkId, HttpServletRequest request,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String apiKey) {
+        // verificar la API key
+        if (!isValidApiKey(apiKey)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        String ipAddress = getClientIp(request);
+        analyticService.logCustomLinkClick(customLinkId, ipAddress);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping()
     public ResponseEntity<?> getPageVisitsByDateRange(@RequestParam Long pageId,
             @RequestParam String startDate,
             @RequestParam String endDate,

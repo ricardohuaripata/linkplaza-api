@@ -19,25 +19,24 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "visits")
+@Table(name = "custom_link_clicks")
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Visit {
+public class CustomLinkClick {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "page_id", referencedColumnName = "id", nullable = false)
-    private Page page;
+    @JoinColumn(name = "custom_link_id", referencedColumnName = "id", nullable = false)
+    private CustomLink customLink;
 
     @Column(nullable = false)
     private String ipAddress;
 
     @Column(nullable = false)
     private Date dateCreated;
-
 }
