@@ -41,14 +41,28 @@ public class EmailServiceImpl implements IEmailService {
 
     @Override
     public String buildAccountVerificationMail(String verificationCode) {
-        return "<p style=\"margin-bottom: 32px;\">Use the code below to verify your account. It will expire in 15 minutes.</p>"
-                + "<h1>" + verificationCode + "</h1>";
+        return "<table width=\"100%\" style=\"background-color: #f5f5f5;\">" +
+                "<tr><td align=\"center\">" +
+                "<table style=\"background-color: #ffffff;\">" +
+                "<tr><td>" +
+                "<h1 style=\"font-size: xx-large; margin: 0;padding: 1.5rem;\">LinkPlaza</h1>" +
+                "<p style=\"font-size: larger; color: #374151; margin: 0;padding: 1.5rem;\">Use the code below to verify your account. It will expire in 15 minutes.</p>"
+                +
+                "<h2 style=\"font-size: xx-large; margin: 0;padding: 1.5rem;\">" + verificationCode + "</h2>" +
+                "</td></tr></table></td></tr></table>";
     }
 
     @Override
     public String buildDeleteAccountVerificationMail(String verificationCode) {
-        return "<p style=\"margin-bottom: 32px;\">Use the code below to confirm that you want to delete your account. It will expire in 15 minutes.</p>"
-                + "<h1>" + verificationCode + "</h1>";
+        return "<table width=\"100%\" style=\"background-color: #f5f5f5;\">" +
+                "<tr><td align=\"center\">" +
+                "<table style=\"background-color: #ffffff;\">" +
+                "<tr><td>" +
+                "<h1 style=\"font-size: xx-large; margin: 0;padding: 1.5rem;\">LinkPlaza</h1>" +
+                "<p style=\"font-size: larger; color: #374151; margin: 0;padding: 1.5rem;\">Use the code below to confirm that you want to delete your account. It will expire in 15 minutes.</p>"
+                +
+                "<h2 style=\"font-size: xx-large; margin: 0;padding: 1.5rem;\">" + verificationCode + "</h2>" +
+                "</td></tr></table></td></tr></table>";
     }
 
 }
