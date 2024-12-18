@@ -37,7 +37,7 @@ public class PageController {
 
     // PAGE ENDPOINTS
     @GetMapping("/{url}")
-    public ResponseEntity<?> getPageByUrl(@PathVariable("url") String url) {
+    public ResponseEntity<?> getPageByUrl(@PathVariable String url) {
         Page page = pageService.getPageByUrl(url);
 
         PageResponse pageResponse = new PageResponse();
@@ -66,7 +66,7 @@ public class PageController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<?> updatePage(@PathVariable("id") Long id, @RequestBody @Valid UpdatePageDto updatePageDto) {
+    public ResponseEntity<?> updatePage(@PathVariable Long id, @RequestBody @Valid UpdatePageDto updatePageDto) {
         Page page = pageService.updatePage(id, updatePageDto);
 
         SuccessResponse<Page> successResponse = new SuccessResponse<>();
@@ -78,7 +78,7 @@ public class PageController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletePage(@PathVariable("id") Long id) {
+    public ResponseEntity<?> deletePage(@PathVariable Long id) {
         User user = pageService.deletePage(id);
 
         SuccessResponse<User> successResponse = new SuccessResponse<>();
@@ -91,7 +91,7 @@ public class PageController {
 
     // SOCIAL LINK ENDPOINTS
     @PostMapping("/{id}/social-link")
-    public ResponseEntity<?> addSocialLink(@PathVariable("id") Long id,
+    public ResponseEntity<?> addSocialLink(@PathVariable Long id,
             @RequestBody @Valid AddSocialLinkDto addSocialLinkDto) {
         Page page = pageService.addSocialLink(id, addSocialLinkDto);
 
@@ -104,7 +104,7 @@ public class PageController {
     }
 
     @PutMapping("/{id}/social-link/sort")
-    public ResponseEntity<?> sortSocialLinks(@PathVariable("id") Long id,
+    public ResponseEntity<?> sortSocialLinks(@PathVariable Long id,
             @RequestBody @Valid SortLinksDto sortLinksDto) {
         Page page = pageService.sortSocialLinks(id, sortLinksDto.getIds());
 
@@ -117,7 +117,7 @@ public class PageController {
     }
 
     @PatchMapping("/social-link/{id}")
-    public ResponseEntity<?> updateSocialLink(@PathVariable("id") Long id,
+    public ResponseEntity<?> updateSocialLink(@PathVariable Long id,
             @RequestBody @Valid UpdateSocialLinkDto updateSocialLinkDto) {
         Page page = pageService.updateSocialLink(id, updateSocialLinkDto);
 
@@ -130,7 +130,7 @@ public class PageController {
     }
 
     @DeleteMapping("/social-link/{id}")
-    public ResponseEntity<?> deleteSocialLink(@PathVariable("id") Long id) {
+    public ResponseEntity<?> deleteSocialLink(@PathVariable Long id) {
         Page page = pageService.deleteSocialLink(id);
 
         SuccessResponse<Page> successResponse = new SuccessResponse<>();
@@ -143,7 +143,7 @@ public class PageController {
 
     // CUSTOM LINK ENDPOINTS
     @PostMapping("/{id}/custom-link")
-    public ResponseEntity<?> addCustomLink(@PathVariable("id") Long id,
+    public ResponseEntity<?> addCustomLink(@PathVariable Long id,
             @RequestBody @Valid AddCustomLinkDto addCustomLinkDto) {
         Page page = pageService.addCustomLink(id, addCustomLinkDto);
 
@@ -156,7 +156,7 @@ public class PageController {
     }
 
     @PutMapping("/{id}/custom-link/sort")
-    public ResponseEntity<?> sortCustomLinks(@PathVariable("id") Long id,
+    public ResponseEntity<?> sortCustomLinks(@PathVariable Long id,
             @RequestBody @Valid SortLinksDto sortLinksDto) {
         Page page = pageService.sortCustomLinks(id, sortLinksDto.getIds());
 
@@ -169,7 +169,7 @@ public class PageController {
     }
 
     @PatchMapping("/custom-link/{id}")
-    public ResponseEntity<?> updateCustomLink(@PathVariable("id") Long id,
+    public ResponseEntity<?> updateCustomLink(@PathVariable Long id,
             @RequestBody @Valid UpdateCustomLinkDto updateCustomLinkDto) {
         Page page = pageService.updateCustomLink(id, updateCustomLinkDto);
 
@@ -182,7 +182,7 @@ public class PageController {
     }
 
     @DeleteMapping("/custom-link/{id}")
-    public ResponseEntity<?> deleteCustomLink(@PathVariable("id") Long id) {
+    public ResponseEntity<?> deleteCustomLink(@PathVariable Long id) {
         Page page = pageService.deleteCustomLink(id);
 
         SuccessResponse<Page> successResponse = new SuccessResponse<>();
