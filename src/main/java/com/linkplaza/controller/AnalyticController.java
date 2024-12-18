@@ -42,6 +42,18 @@ public class AnalyticController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PostMapping("/social-link-click")
+    public ResponseEntity<?> logSocialLinkClick(@RequestParam Long socialLinkId, HttpServletRequest request,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String apiKey) {
+        // verificar la API key
+        if (!isValidApiKey(apiKey)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        String ipAddress = getClientIp(request);
+        analyticService.logSocialLinkClick(socialLinkId, ipAddress);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @PostMapping("/custom-link-click")
     public ResponseEntity<?> logCustomLinkClick(@RequestParam Long customLinkId, HttpServletRequest request,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String apiKey) {

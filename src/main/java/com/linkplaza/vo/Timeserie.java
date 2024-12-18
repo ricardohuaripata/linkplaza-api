@@ -12,7 +12,9 @@ import lombok.Setter;
 public class Timeserie {
     private Long views;
     private Long uniqueViews;
-    private Long clicks;
-    private Long uniqueClicks;
+    private Long socialLinkClicks;
+    private Long socialLinkUniqueClicks;
+    private Long customLinkClicks;
+    private Long customLinkUniqueClicks;
     private String date;
 }

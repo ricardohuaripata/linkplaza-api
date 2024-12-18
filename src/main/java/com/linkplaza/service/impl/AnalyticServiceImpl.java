@@ -16,19 +16,25 @@ import org.springframework.stereotype.Service;
 import com.linkplaza.entity.CustomLink;
 import com.linkplaza.entity.CustomLinkClick;
 import com.linkplaza.entity.Page;
+import com.linkplaza.entity.SocialLink;
+import com.linkplaza.entity.SocialLinkClick;
 import com.linkplaza.entity.Visit;
 import com.linkplaza.repository.CustomLinkClickRepository;
+import com.linkplaza.repository.SocialLinkClickRepository;
 import com.linkplaza.repository.VisitRepository;
 import com.linkplaza.service.IAnalyticService;
 import com.linkplaza.service.IPageService;
 import com.linkplaza.vo.CustomLinkAnalytic;
 import com.linkplaza.vo.PageAnalytic;
+import com.linkplaza.vo.SocialLinkAnalytic;
 import com.linkplaza.vo.Timeserie;
 
 @Service
 public class AnalyticServiceImpl implements IAnalyticService {
     @Autowired
     private VisitRepository visitRepository;
+    @Autowired
+    private SocialLinkClickRepository socialLinkClickRepository;
     @Autowired
     private CustomLinkClickRepository customLinkClickRepository;
     @Autowired
@@ -43,6 +49,17 @@ public class AnalyticServiceImpl implements IAnalyticService {
         visit.setIpAddress(ipAddress);
         visit.setDateCreated(new Date());
         visitRepository.save(visit);
+    }
+
+    @Override
+    public void logSocialLinkClick(Long socialLinkId, String ipAddress) {
+        SocialLink socialLink = pageService.getSocialLinkById(socialLinkId);
+
+        SocialLinkClick socialLinkClick = new SocialLinkClick();
+        socialLinkClick.setSocialLink(socialLink);
+        socialLinkClick.setIpAddress(ipAddress);
+        socialLinkClick.setDateCreated(new Date());
+        socialLinkClickRepository.save(socialLinkClick);
     }
 
     @Override
@@ -72,8 +89,10 @@ public class AnalyticServiceImpl implements IAnalyticService {
             Timeserie timeserie = new Timeserie();
             timeserie.setViews(0L);
             timeserie.setUniqueViews(0L);
-            timeserie.setClicks(0L);
-            timeserie.setUniqueClicks(0L);
+            timeserie.setSocialLinkClicks(0L);
+            timeserie.setSocialLinkUniqueClicks(0L);
+            timeserie.setCustomLinkClicks(0L);
+            timeserie.setCustomLinkUniqueClicks(0L);
             timeserie.setDate(date);
             timeseries.add(timeserie);
 
@@ -100,10 +119,25 @@ public class AnalyticServiceImpl implements IAnalyticService {
         }
 
         // obtener los registros de clicks del rango de fechas
-        List<CustomLinkClick> customLinkClicks = customLinkClickRepository
-                .findByCustomLink_PageAndDateCreatedBetween(page, startDate, endDate);
-        // crear un mapa para rastrear las ip unicas de clicks por fecha
+        List<CustomLinkClick> customLinkClicks = customLinkClickRepository.findByCustomLink_PageAndDateCreatedBetween(page, startDate, endDate);
+        List<SocialLinkClick> socialLinkClicks = socialLinkClickRepository.findBySocialLink_PageAndDateCreatedBetween(page, startDate, endDate);
+        // rastrear las ip unicas de clicks por fecha
+        Map<String, Set<String>> uniqueIpSocialLinkClicksMap = new HashMap<>();
         Map<String, Set<String>> uniqueIpCustomLinkClicksMap = new HashMap<>();
+
+        for (SocialLinkClick socialLinkClick : socialLinkClicks) {
+            String date = new SimpleDateFormat("dd-MM-yyyy").format(socialLinkClick.getDateCreated());
+            uniqueIpSocialLinkClicksMap.putIfAbsent(date, new HashSet<>());
+
+            for (Timeserie timeserie : timeseries) {
+                if (timeserie.getDate().equals(date)) {
+                    timeserie.setSocialLinkClicks(timeserie.getSocialLinkClicks() + 1);
+                    uniqueIpSocialLinkClicksMap.get(date).add(socialLinkClick.getIpAddress());
+                    break;
+                }
+            }
+
+        }
 
         for (CustomLinkClick customLinkClick : customLinkClicks) {
             String date = new SimpleDateFormat("dd-MM-yyyy").format(customLinkClick.getDateCreated());
@@ -111,26 +145,44 @@ public class AnalyticServiceImpl implements IAnalyticService {
 
             for (Timeserie timeserie : timeseries) {
                 if (timeserie.getDate().equals(date)) {
-                    timeserie.setClicks(timeserie.getClicks() + 1);
+                    timeserie.setCustomLinkClicks(timeserie.getCustomLinkClicks() + 1);
                     uniqueIpCustomLinkClicksMap.get(date).add(customLinkClick.getIpAddress());
                     break;
                 }
             }
 
         }
+
         // setear conteo de ips unicas para views y clicks por fecha
         for (Timeserie timeserie : timeseries) {
             Set<String> uniqueIpViews = uniqueIpViewsMap.get(timeserie.getDate());
+            Set<String> uniqueIpSocialLinkClicks = uniqueIpSocialLinkClicksMap.get(timeserie.getDate());
             Set<String> uniqueIpCustomLinkClicks = uniqueIpCustomLinkClicksMap.get(timeserie.getDate());
             if (uniqueIpViews != null) {
                 timeserie.setUniqueViews((long) uniqueIpViews.size());
             }
+            if (uniqueIpSocialLinkClicks != null) {
+                timeserie.setSocialLinkUniqueClicks((long) uniqueIpSocialLinkClicks.size());
+            }
             if (uniqueIpCustomLinkClicks != null) {
-                timeserie.setUniqueClicks((long) uniqueIpCustomLinkClicks.size());
+                timeserie.setCustomLinkUniqueClicks((long) uniqueIpCustomLinkClicks.size());
             }
         }
-        // conteo de clicks y uniqueClicks para cada customLink del page
+
+        // conteo de clicks para cada link
+        List<SocialLinkAnalytic> socialLinkAnalytics = new ArrayList<>();
         List<CustomLinkAnalytic> customLinkAnalytics = new ArrayList<>();
+
+        for (SocialLink socialLink : page.getSocialLinks()) {
+            Long clicks = socialLinkClickRepository.countBySocialLink(socialLink);
+            Long uniqueClicks = socialLinkClickRepository.countDistinctByIpAddressAndSocialLink(socialLink);
+
+            SocialLinkAnalytic socialLinkAnalytic = new SocialLinkAnalytic();
+            socialLinkAnalytic.setSocialLink(socialLink);
+            socialLinkAnalytic.setClicks(clicks);
+            socialLinkAnalytic.setUniqueClicks(uniqueClicks);
+            socialLinkAnalytics.add(socialLinkAnalytic);
+        }
 
         for (CustomLink customLink : page.getCustomLinks()) {
             Long clicks = customLinkClickRepository.countByCustomLink(customLink);
@@ -141,21 +193,26 @@ public class AnalyticServiceImpl implements IAnalyticService {
             customLinkAnalytic.setClicks(clicks);
             customLinkAnalytic.setUniqueClicks(uniqueClicks);
             customLinkAnalytics.add(customLinkAnalytic);
-
         }
-        // conteo total de eventos relacionados al page
+
+        // conteo total de eventos relacionados a la pagina
         Long totalViews = visitRepository.countByPage(page);
         Long totalUniqueViews = visitRepository.countDistinctByIpAddressAndPage(page);
-        Long totalClicks = customLinkClickRepository.countByCustomLink_Page(page);
-        Long totalUniqueClicks = customLinkClickRepository.countDistinctByIpAddressAndCustomLinkPage(page);
+        Long totalSocialLinkClicks = socialLinkClickRepository.countBySocialLink_Page(page);
+        Long totalSocialLinkUniqueClicks = socialLinkClickRepository.countDistinctByIpAddressAndSocialLinkPage(page);
+        Long totalCustomLinkClicks = customLinkClickRepository.countByCustomLink_Page(page);
+        Long totalCustomLinkUniqueClicks = customLinkClickRepository.countDistinctByIpAddressAndCustomLinkPage(page);
 
         PageAnalytic pageAnalytic = new PageAnalytic();
         pageAnalytic.setTotalViews(totalViews);
         pageAnalytic.setTotalUniqueViews(totalUniqueViews);
-        pageAnalytic.setTotalClicks(totalClicks);
-        pageAnalytic.setTotalUniqueClicks(totalUniqueClicks);
+        pageAnalytic.setTotalSocialLinkClicks(totalSocialLinkClicks);
+        pageAnalytic.setTotalSocialLinkUniqueClicks(totalSocialLinkUniqueClicks);
+        pageAnalytic.setTotalCustomLinkClicks(totalCustomLinkClicks);
+        pageAnalytic.setTotalCustomLinkUniqueClicks(totalCustomLinkUniqueClicks);
         pageAnalytic.setTimeseries(timeseries);
         pageAnalytic.setCustomLinkAnalytics(customLinkAnalytics);
+        pageAnalytic.setSocialLinkAnalytics(socialLinkAnalytics);
 
         return pageAnalytic;
 

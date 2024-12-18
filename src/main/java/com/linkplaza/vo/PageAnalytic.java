@@ -14,9 +14,12 @@ import lombok.Setter;
 public class PageAnalytic {
     private Long totalViews;
     private Long totalUniqueViews;
-    private Long totalClicks;
-    private Long totalUniqueClicks;
+    private Long totalSocialLinkClicks;
+    private Long totalSocialLinkUniqueClicks;
+    private Long totalCustomLinkClicks;
+    private Long totalCustomLinkUniqueClicks;
     private List<Timeserie> timeseries;
     private List<CustomLinkAnalytic> customLinkAnalytics;
+    private List<SocialLinkAnalytic> socialLinkAnalytics;
 
 }
