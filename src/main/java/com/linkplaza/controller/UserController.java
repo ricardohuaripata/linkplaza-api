@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.linkplaza.common.AppConstants;
+import com.linkplaza.dto.ChangePasswordDto;
 import com.linkplaza.dto.VerifyCodeDto;
 import com.linkplaza.entity.User;
 import com.linkplaza.response.SuccessResponse;
@@ -45,6 +47,15 @@ public class UserController {
         successResponse.setStatus("success");
         successResponse.setMessage("Showing user info.");
         successResponse.setData(user);
+        return new ResponseEntity<>(successResponse, HttpStatus.OK);
+    }
+
+    @PatchMapping("/account/password")
+    public ResponseEntity<?> changePassword(@RequestBody @Valid ChangePasswordDto changePasswordDto) {
+        userService.changePassword(changePasswordDto);
+        SuccessResponse<?> successResponse = new SuccessResponse<>();
+        successResponse.setStatus("success");
+        successResponse.setMessage("Password changed successfully.");
         return new ResponseEntity<>(successResponse, HttpStatus.OK);
     }
 

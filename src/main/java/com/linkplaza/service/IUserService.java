@@ -1,5 +1,6 @@
 package com.linkplaza.service;
 
+import com.linkplaza.dto.ChangePasswordDto;
 import com.linkplaza.dto.VerifyCodeDto;
 import com.linkplaza.entity.User;
 
@@ -19,5 +20,7 @@ public interface IUserService {
     void deleteAccount(VerifyCodeDto verifyCodeDto);
 
     String generateVerificationCode(User user, String type);
+
+    void changePassword(ChangePasswordDto changePasswordDto);
 
 }

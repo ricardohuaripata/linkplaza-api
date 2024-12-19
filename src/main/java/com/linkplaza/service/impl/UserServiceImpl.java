@@ -7,10 +7,12 @@ import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.linkplaza.common.AppConstants;
+import com.linkplaza.dto.ChangePasswordDto;
 import com.linkplaza.dto.VerifyCodeDto;
 import com.linkplaza.entity.User;
 import com.linkplaza.entity.VerificationCode;
@@ -28,6 +30,8 @@ public class UserServiceImpl implements IUserService {
     private VerificationCodeRepository verificationCodeRepository;
     @Autowired
     private IEmailService emailService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public User getUserById(Long id) {
@@ -140,6 +144,20 @@ public class UserServiceImpl implements IUserService {
                 .setDateExpiration(new Date(System.currentTimeMillis() + AppConstants.VERIFICATION_CODE_EXPIRATION));
         verificationCodeRepository.save(verificationCode);
         return code.toString();
+    }
+
+    @Override
+    public void changePassword(ChangePasswordDto changePasswordDto) {
+        User authUser = getAuthenticatedUser();
+
+        if (!passwordEncoder.matches(changePasswordDto.getOldPassword(), authUser.getPassword())) {
+            throw new IllegalArgumentException("Old password doesn't match your current password.");
+        }
+
+        String encodedNewPassword = passwordEncoder.encode(changePasswordDto.getNewPassword());
+        authUser.setPassword(encodedNewPassword);
+        authUser.setDateLastModified(new Date());
+        userRepository.save(authUser);
     }
 
 }
