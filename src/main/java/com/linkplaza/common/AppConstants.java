@@ -15,7 +15,7 @@ public class AppConstants {
     public static final String METHOD_NOT_ALLOWED = "This operation is not allowed. Only %s operations are allowed.";
     public static final String INVALID_TOKEN = "Token is not valid.";
     public static final String INTERNAL_SERVER_ERROR = "An error occurred while processing your request.";
-    public static final String INCORRECT_CREDENTIALS = "Incorrect username or password.";
+    public static final String INCORRECT_CREDENTIALS = "Incorrect email or password.";
     public static final String TOKEN_UNVERIFIABLE = "Token cannot be verified.";
 
     public static final String NOT_PAGE_OWNER = "Your are not the owner of this page.";

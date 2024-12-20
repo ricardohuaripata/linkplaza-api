@@ -76,7 +76,7 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException e) {
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, AppConstants.INCORRECT_CREDENTIALS, null);
+        return buildErrorResponse(HttpStatus.UNAUTHORIZED, AppConstants.INCORRECT_CREDENTIALS, null);
     }
 
     @ExceptionHandler(TokenExpiredException.class)
@@ -91,7 +91,7 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(AuthenticationServiceException.class)
     public ResponseEntity<ErrorResponse> handleAuthenticationServiceException(AuthenticationServiceException e) {
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, AppConstants.INCORRECT_CREDENTIALS, null);
+        return buildErrorResponse(HttpStatus.UNAUTHORIZED, AppConstants.INCORRECT_CREDENTIALS, null);
     }
 
     @ExceptionHandler(NoResultException.class)
