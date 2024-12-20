@@ -7,4 +7,6 @@ public interface IEmailService {
 
     String buildDeleteAccountVerificationMail(String verificationCode);
 
+    String buildResetPasswordMail(String verificationCode);
+
 }

@@ -10,12 +10,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.linkplaza.dto.ForgotPasswordDto;
+import com.linkplaza.dto.ResetPasswordDto;
 import com.linkplaza.dto.SignInDto;
 import com.linkplaza.dto.SignUpDto;
 import com.linkplaza.entity.User;
 import com.linkplaza.enumeration.Role;
+import com.linkplaza.enumeration.TokenType;
 import com.linkplaza.enumeration.VerificationCodeType;
 import com.linkplaza.repository.UserRepository;
+import com.linkplaza.security.JwtTokenService;
+import com.linkplaza.security.UserPrincipal;
 import com.linkplaza.service.IAuthService;
 import com.linkplaza.service.IEmailService;
 import com.linkplaza.service.IUserService;
@@ -32,6 +37,8 @@ public class AuthServiceImpl implements IAuthService {
     private IUserService userService;
     @Autowired
     private IEmailService emailService;
+    @Autowired
+    private JwtTokenService jwtTokenService;
 
     @Override
     @Transactional
@@ -58,7 +65,7 @@ public class AuthServiceImpl implements IAuthService {
         String mailTo = savedUser.getEmail();
         String mailSubject = "Your code: " + verificationcode;
         String mailContent = emailService.buildAccountVerificationMail(verificationcode);
-        //emailService.send(mailTo, mailSubject, mailContent);
+        // emailService.send(mailTo, mailSubject, mailContent);
 
         return savedUser;
     }
@@ -68,6 +75,44 @@ public class AuthServiceImpl implements IAuthService {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 signInDto.getEmail(), signInDto.getPassword()));
         return userService.getUserByEmail(signInDto.getEmail());
+    }
+
+    @Override
+    public void forgotPassword(ForgotPasswordDto forgotPasswordDto) {
+        User user = userService.getUserByEmail(forgotPasswordDto.getEmail());
+        String token = jwtTokenService.generateToken(new UserPrincipal(user), TokenType.RESET_PASSWORD_TOKEN);
+
+        String mailTo = user.getEmail();
+        String mailSubject = "Reset password";
+        String mailContent = emailService.buildResetPasswordMail(token);
+        emailService.send(mailTo, mailSubject, mailContent);
+
+    }
+
+    @Override
+    public void resetPassword(ResetPasswordDto resetPasswordDto) {
+        String token = resetPasswordDto.getToken();
+        String targetEmail = "";
+
+        try {
+            targetEmail = jwtTokenService.getSubjectFromToken(token);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid token.");
+        }
+
+        if (jwtTokenService.isTokenValid(targetEmail, token, TokenType.RESET_PASSWORD_TOKEN) == false) {
+            throw new IllegalArgumentException("Invalid token.");
+        }
+
+        User user = userService.getUserByEmail(targetEmail);
+        user.setPassword(passwordEncoder.encode(resetPasswordDto.getPassword()));
+        // verificar al usuario si aun no esta verificado
+        if (user.isEmailVerified() == false) {
+            user.setEmailVerified(true);
+        }
+
+        user.setDateLastModified(new Date());
+        userRepository.save(user);
     }
 
 }

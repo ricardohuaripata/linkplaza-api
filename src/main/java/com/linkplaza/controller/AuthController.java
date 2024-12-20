@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.linkplaza.common.AppConstants;
+import com.linkplaza.dto.ForgotPasswordDto;
+import com.linkplaza.dto.ResetPasswordDto;
 import com.linkplaza.dto.SignInDto;
 import com.linkplaza.dto.SignUpDto;
 import com.linkplaza.entity.User;
@@ -64,6 +66,26 @@ public class AuthController {
         successResponse.setStatus("success");
         successResponse.setMessage("Successful sign in.");
         successResponse.setData(user);
+        return new ResponseEntity<>(successResponse, HttpStatus.OK);
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody @Valid ForgotPasswordDto forgotPasswordDto) {
+        authService.forgotPassword(forgotPasswordDto);
+
+        SuccessResponse<?> successResponse = new SuccessResponse<>();
+        successResponse.setStatus("success");
+        successResponse.setMessage("Please, check your email.");
+        return new ResponseEntity<>(successResponse, HttpStatus.ACCEPTED);
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody @Valid ResetPasswordDto resetPasswordDto) {
+        authService.resetPassword(resetPasswordDto);
+
+        SuccessResponse<?> successResponse = new SuccessResponse<>();
+        successResponse.setStatus("success");
+        successResponse.setMessage("Password reset successfully.");
         return new ResponseEntity<>(successResponse, HttpStatus.OK);
     }
 

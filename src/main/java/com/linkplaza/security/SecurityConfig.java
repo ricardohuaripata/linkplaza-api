@@ -42,6 +42,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .antMatchers(HttpMethod.GET, "/api/v1/social-platform").permitAll()
                         .antMatchers(HttpMethod.POST, "/api/v1/auth/signup").permitAll()
                         .antMatchers(HttpMethod.POST, "/api/v1/auth/signin").permitAll()
+                        .antMatchers(HttpMethod.POST, "/api/v1/auth/forgot-password").permitAll()
+                        .antMatchers(HttpMethod.POST, "/api/v1/auth/reset-password").permitAll()
                         .antMatchers("/api/v1/analytic/**").permitAll()
                         .antMatchers(HttpMethod.GET, "/api/v1/user/{id}").hasRole("ADMIN")
                         .anyRequest().authenticated())

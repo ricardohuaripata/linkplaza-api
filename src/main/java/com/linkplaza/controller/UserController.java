@@ -136,7 +136,7 @@ public class UserController {
         SuccessResponse<?> successResponse = new SuccessResponse<>();
         successResponse.setStatus("success");
         successResponse.setMessage("A temporary verification code has sent to your email.");
-        return new ResponseEntity<>(successResponse, HttpStatus.OK);
+        return new ResponseEntity<>(successResponse, HttpStatus.ACCEPTED);
     }
 
     @PostMapping("/account/send-delete-account-verification-code")
@@ -145,7 +145,7 @@ public class UserController {
         SuccessResponse<?> successResponse = new SuccessResponse<>();
         successResponse.setStatus("success");
         successResponse.setMessage("A temporary verification code has sent to your email.");
-        return new ResponseEntity<>(successResponse, HttpStatus.OK);
+        return new ResponseEntity<>(successResponse, HttpStatus.ACCEPTED);
     }
 
 }
