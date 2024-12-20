@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.linkplaza.common.AppConstants;
+import com.linkplaza.dto.ChangeEmailDto;
 import com.linkplaza.dto.ChangePasswordDto;
 import com.linkplaza.dto.VerifyCodeDto;
 import com.linkplaza.entity.User;
@@ -147,17 +148,32 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public void changePassword(ChangePasswordDto changePasswordDto) {
+    public User changePassword(ChangePasswordDto changePasswordDto) {
         User authUser = getAuthenticatedUser();
 
         if (!passwordEncoder.matches(changePasswordDto.getOldPassword(), authUser.getPassword())) {
-            throw new IllegalArgumentException("Old password doesn't match your current password.");
+            throw new IllegalArgumentException("The old password doesn't match your current password.");
         }
 
         String encodedNewPassword = passwordEncoder.encode(changePasswordDto.getNewPassword());
         authUser.setPassword(encodedNewPassword);
         authUser.setDateLastModified(new Date());
-        userRepository.save(authUser);
+        return userRepository.save(authUser);
+    }
+
+    @Override
+    public User changeEmail(ChangeEmailDto changeEmailDto) {
+
+        Optional<User> existingUser = userRepository.findByEmail(changeEmailDto.getEmail());
+        if (existingUser.isPresent()) {
+            throw new IllegalArgumentException("The email is already taken.");
+        }
+
+        User authUser = getAuthenticatedUser();
+        authUser.setEmail(changeEmailDto.getEmail());
+        authUser.setEmailVerified(false);
+        authUser.setDateLastModified(new Date());
+        return userRepository.save(authUser);
     }
 
 }

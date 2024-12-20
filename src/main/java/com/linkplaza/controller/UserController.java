@@ -17,10 +17,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.linkplaza.common.AppConstants;
+import com.linkplaza.dto.ChangeEmailDto;
 import com.linkplaza.dto.ChangePasswordDto;
 import com.linkplaza.dto.VerifyCodeDto;
 import com.linkplaza.entity.User;
+import com.linkplaza.enumeration.TokenType;
 import com.linkplaza.response.SuccessResponse;
+import com.linkplaza.security.JwtTokenService;
+import com.linkplaza.security.UserPrincipal;
 import com.linkplaza.service.IUserService;
 
 @RestController
@@ -29,6 +33,9 @@ public class UserController {
 
     @Autowired
     private IUserService userService;
+
+    @Autowired
+    private JwtTokenService jwtTokenService;
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserById(@PathVariable Long id) {
@@ -50,12 +57,33 @@ public class UserController {
         return new ResponseEntity<>(successResponse, HttpStatus.OK);
     }
 
+    @PatchMapping("/account/email")
+    public ResponseEntity<?> changeEmail(@RequestBody @Valid ChangeEmailDto changeEmailDto,
+            HttpServletResponse response) {
+        User user = userService.changeEmail(changeEmailDto);
+
+        String token = jwtTokenService.generateToken(new UserPrincipal(user), TokenType.AUTH_TOKEN);
+
+        Cookie cookie = new Cookie(AppConstants.TOKEN_HEADER, token);
+        cookie.setHttpOnly(true);
+        // cookie.setSecure(true);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+
+        SuccessResponse<User> successResponse = new SuccessResponse<>();
+        successResponse.setStatus("success");
+        successResponse.setMessage("Email changed successfully.");
+        successResponse.setData(user);
+        return new ResponseEntity<>(successResponse, HttpStatus.OK);
+    }
+
     @PatchMapping("/account/password")
     public ResponseEntity<?> changePassword(@RequestBody @Valid ChangePasswordDto changePasswordDto) {
-        userService.changePassword(changePasswordDto);
-        SuccessResponse<?> successResponse = new SuccessResponse<>();
+        User user = userService.changePassword(changePasswordDto);
+        SuccessResponse<User> successResponse = new SuccessResponse<>();
         successResponse.setStatus("success");
         successResponse.setMessage("Password changed successfully.");
+        successResponse.setData(user);
         return new ResponseEntity<>(successResponse, HttpStatus.OK);
     }
 
