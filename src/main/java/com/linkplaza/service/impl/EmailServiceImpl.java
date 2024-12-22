@@ -67,7 +67,7 @@ public class EmailServiceImpl implements IEmailService {
 
     @Override
     public String buildResetPasswordMail(String token) {
-        String frontend = "http://localhost:4200";
+        String frontend = "https://linkplaza.netlify.app";
         String url = frontend + "/reset-password?token=" + token;
         return "<table width=\"100%\" style=\"background-color: #f5f5f5;\">" +
                 "<tr><td align=\"center\">" +
