@@ -11,19 +11,23 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import com.linkplaza.common.AppConstants;
 import com.linkplaza.entity.CustomLink;
 import com.linkplaza.entity.CustomLinkClick;
 import com.linkplaza.entity.Page;
 import com.linkplaza.entity.SocialLink;
 import com.linkplaza.entity.SocialLinkClick;
+import com.linkplaza.entity.User;
 import com.linkplaza.entity.Visit;
 import com.linkplaza.repository.CustomLinkClickRepository;
 import com.linkplaza.repository.SocialLinkClickRepository;
 import com.linkplaza.repository.VisitRepository;
 import com.linkplaza.service.IAnalyticService;
 import com.linkplaza.service.IPageService;
+import com.linkplaza.service.IUserService;
 import com.linkplaza.vo.CustomLinkAnalytic;
 import com.linkplaza.vo.PageAnalytic;
 import com.linkplaza.vo.SocialLinkAnalytic;
@@ -39,6 +43,8 @@ public class AnalyticServiceImpl implements IAnalyticService {
     private CustomLinkClickRepository customLinkClickRepository;
     @Autowired
     private IPageService pageService;
+    @Autowired
+    private IUserService userService;
 
     @Override
     public void logVisit(Long pageId, String ipAddress) {
@@ -76,6 +82,11 @@ public class AnalyticServiceImpl implements IAnalyticService {
     @Override
     public PageAnalytic getPageAnalytic(Long pageId, Date startDate, Date endDate) {
         Page page = pageService.getPageById(pageId);
+        User user = userService.getAuthenticatedUser();
+
+        if (!page.getUser().equals(user)) {
+            throw new AccessDeniedException(AppConstants.NOT_PAGE_OWNER);
+        }
 
         List<Timeserie> timeseries = new ArrayList<>();
 

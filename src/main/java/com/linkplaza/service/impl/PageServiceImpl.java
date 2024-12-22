@@ -236,6 +236,7 @@ public class PageServiceImpl implements IPageService {
         if (updateSocialLinkDto.getActive() != null) {
             socialLink.setActive(updateSocialLinkDto.getActive());
         }
+
         socialLinkRepository.save(socialLink);
 
         page.setDateLastModified(new Date());
@@ -255,13 +256,13 @@ public class PageServiceImpl implements IPageService {
         if (updateCustomLinkDto.getUrl() != null && updateCustomLinkDto.getUrl().trim().isEmpty() == false) {
             customLink.setUrl(updateCustomLinkDto.getUrl());
         }
-
         if (updateCustomLinkDto.getTitle() != null && updateCustomLinkDto.getTitle().trim().isEmpty() == false) {
             customLink.setTitle(updateCustomLinkDto.getTitle());
         }
         if (updateCustomLinkDto.getActive() != null) {
             customLink.setActive(updateCustomLinkDto.getActive());
         }
+
         customLinkRepository.save(customLink);
 
         page.setDateLastModified(new Date());
@@ -272,12 +273,13 @@ public class PageServiceImpl implements IPageService {
     public Page sortSocialLinks(Long pageId, List<Long> ids) {
         Page page = getPageById(pageId);
         User user = userService.getAuthenticatedUser();
-        // obtener los SocialLinks existentes
-        List<SocialLink> socialLinks = page.getSocialLinks();
 
         if (!page.getUser().equals(user)) {
             throw new AccessDeniedException(AppConstants.NOT_PAGE_OWNER);
         }
+
+        // obtener los SocialLinks existentes
+        List<SocialLink> socialLinks = page.getSocialLinks();
 
         // validar mismo tamaño de lista
         if (socialLinks.size() != ids.size()) {
@@ -321,12 +323,13 @@ public class PageServiceImpl implements IPageService {
     public Page sortCustomLinks(Long pageId, List<Long> ids) {
         Page page = getPageById(pageId);
         User user = userService.getAuthenticatedUser();
-        // obtener los CustomLinks existentes
-        List<CustomLink> customLinks = page.getCustomLinks();
 
         if (!page.getUser().equals(user)) {
             throw new AccessDeniedException(AppConstants.NOT_PAGE_OWNER);
         }
+
+        // obtener los CustomLinks existentes
+        List<CustomLink> customLinks = page.getCustomLinks();
 
         // validar mismo tamaño de lista
         if (customLinks.size() != ids.size()) {
@@ -370,9 +373,11 @@ public class PageServiceImpl implements IPageService {
     public User deletePage(Long pageId) {
         Page page = getPageById(pageId);
         User user = userService.getAuthenticatedUser();
+
         if (!page.getUser().equals(user)) {
             throw new AccessDeniedException(AppConstants.NOT_PAGE_OWNER);
         }
+
         pageRepository.delete(page);
         return user;
     }
@@ -380,28 +385,32 @@ public class PageServiceImpl implements IPageService {
     @Override
     public Page deleteSocialLink(Long socialLinkId) {
         SocialLink socialLink = getSocialLinkById(socialLinkId);
-        Page page = socialLink.getPage();
         User user = userService.getAuthenticatedUser();
+        Page page = socialLink.getPage();
+
         if (!page.getUser().equals(user)) {
             throw new AccessDeniedException(AppConstants.NOT_PAGE_OWNER);
         }
-        socialLinkRepository.delete(socialLink);
-        page.setDateLastModified(new Date());
 
+        socialLinkRepository.delete(socialLink);
+
+        page.setDateLastModified(new Date());
         return pageRepository.save(page);
     }
 
     @Override
     public Page deleteCustomLink(Long customLinkId) {
         CustomLink customLink = getCustomLinkById(customLinkId);
-        Page page = customLink.getPage();
         User user = userService.getAuthenticatedUser();
+        Page page = customLink.getPage();
+
         if (!page.getUser().equals(user)) {
             throw new AccessDeniedException(AppConstants.NOT_PAGE_OWNER);
         }
-        customLinkRepository.delete(customLink);
-        page.setDateLastModified(new Date());
 
+        customLinkRepository.delete(customLink);
+
+        page.setDateLastModified(new Date());
         return pageRepository.save(page);
     }
 

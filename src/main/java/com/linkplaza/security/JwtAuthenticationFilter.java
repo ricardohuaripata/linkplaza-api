@@ -33,7 +33,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/api/v1/social-platform",
             "/api/v1/auth/signup",
             "/api/v1/auth/signin",
-            "/api/v1/analytic");
+            "/api/v1/auth/forgot-password",
+            "/api/v1/auth/reset-password",
+            "/api/v1/analytic/visit",
+            "/api/v1/analytic/social-link-click",
+            "/api/v1/analytic/custom-link-click");
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,

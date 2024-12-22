@@ -67,14 +67,9 @@ public class AnalyticController {
     }
 
     @GetMapping()
-    public ResponseEntity<?> getPageVisitsByDateRange(@RequestParam Long pageId,
+    public ResponseEntity<?> getPageAnalyticsByDateRange(@RequestParam Long pageId,
             @RequestParam String startDate,
-            @RequestParam String endDate,
-            @RequestHeader(HttpHeaders.AUTHORIZATION) String apiKey) {
-        // verificar la API key
-        if (!isValidApiKey(apiKey)) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
+            @RequestParam String endDate) {
 
         Date start;
         Date end;
