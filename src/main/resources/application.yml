@@ -29,5 +29,10 @@ spring:
             required: true
           auth: true
     default-encoding: UTF-8
+
 server:
   port: 8080
+
+app:
+  root:
+    frontend: http://localhost:4200

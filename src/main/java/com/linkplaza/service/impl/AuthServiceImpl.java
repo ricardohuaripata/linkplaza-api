@@ -85,7 +85,7 @@ public class AuthServiceImpl implements IAuthService {
         String mailTo = user.getEmail();
         String mailSubject = "Reset password";
         String mailContent = emailService.buildResetPasswordMail(token);
-        emailService.send(mailTo, mailSubject, mailContent);
+        // emailService.send(mailTo, mailSubject, mailContent);
 
     }
 

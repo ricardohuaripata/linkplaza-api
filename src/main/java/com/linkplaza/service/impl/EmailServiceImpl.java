@@ -4,6 +4,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -21,6 +22,8 @@ public class EmailServiceImpl implements IEmailService {
 
     @Autowired
     private JavaMailSender mailSender;
+    @Autowired
+    private Environment env;
 
     @Override
     @Async
@@ -67,8 +70,9 @@ public class EmailServiceImpl implements IEmailService {
 
     @Override
     public String buildResetPasswordMail(String token) {
-        String frontend = "https://linkplaza.netlify.app";
+        String frontend = env.getProperty("app.root.frontend");
         String url = frontend + "/reset-password?token=" + token;
+        
         return "<table width=\"100%\" style=\"background-color: #f5f5f5;\">" +
                 "<tr><td align=\"center\">" +
                 "<table style=\"background-color: #ffffff;\">" +

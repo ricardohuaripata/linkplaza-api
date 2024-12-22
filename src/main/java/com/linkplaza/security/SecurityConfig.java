@@ -3,6 +3,7 @@ package com.linkplaza.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -30,6 +31,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private CustomAuthenticationEntryPoint authenticationEntryPoint;
     @Autowired
     private CustomUserDetailsService userDetailService;
+    @Autowired
+    private Environment env;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -56,8 +59,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
+        String frontend = env.getProperty("app.root.frontend");
+
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("https://linkplaza.netlify.app");
+        configuration.addAllowedOrigin(frontend);
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
         configuration.addExposedHeader("*");
