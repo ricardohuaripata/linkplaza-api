@@ -1,0 +1,12 @@
+spring:
+  config:
+    import: secret.yml
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/linkplaza?serverTimezone=UTC
+    username: root
+    password: ""
+
+app:
+  root:
+    frontend: http://localhost:4200

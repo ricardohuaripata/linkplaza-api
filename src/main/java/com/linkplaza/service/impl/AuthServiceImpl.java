@@ -57,17 +57,7 @@ public class AuthServiceImpl implements IAuthService {
         newUser.setDateLastModified(currentDate);
         newUser.setRole(Role.ROLE_USER.name());
         newUser.setEmailVerified(false);
-        User savedUser = userRepository.save(newUser);
-
-        String verificationcode = userService.generateVerificationCode(savedUser,
-                VerificationCodeType.ACCOUNT_VERIFICATION.name());
-
-        String mailTo = savedUser.getEmail();
-        String mailSubject = "Your code: " + verificationcode;
-        String mailContent = emailService.buildAccountVerificationMail(verificationcode);
-        // emailService.send(mailTo, mailSubject, mailContent);
-
-        return savedUser;
+        return userRepository.save(newUser);
     }
 
     @Override

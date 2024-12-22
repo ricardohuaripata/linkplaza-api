@@ -61,14 +61,12 @@ public class UserController {
     public ResponseEntity<?> changeEmail(@RequestBody @Valid ChangeEmailDto changeEmailDto,
             HttpServletResponse response) {
         User user = userService.changeEmail(changeEmailDto);
+        UserPrincipal userPrincipal = new UserPrincipal(user);
+        String token = jwtTokenService.generateToken(userPrincipal, TokenType.AUTH_TOKEN);
 
-        String token = jwtTokenService.generateToken(new UserPrincipal(user), TokenType.AUTH_TOKEN);
-
-        Cookie cookie = new Cookie(AppConstants.TOKEN_HEADER, token);
-        cookie.setHttpOnly(true);
-        // cookie.setSecure(true);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+        // actualizar token de autenticacion
+        String cookieHeader = AppConstants.TOKEN_HEADER + "=" + token + "; HttpOnly; Secure; SameSite=None; Path=/";
+        response.addHeader("Set-Cookie", cookieHeader);
 
         SuccessResponse<User> successResponse = new SuccessResponse<>();
         successResponse.setStatus("success");
@@ -89,12 +87,9 @@ public class UserController {
 
     @PostMapping("/account/signout")
     public ResponseEntity<?> signOut(HttpServletResponse response) {
-        // eliminar la cookie del token
-        Cookie cookie = new Cookie(AppConstants.TOKEN_HEADER, null);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(0); // establece la cookie para que expire inmediatamente
-        response.addCookie(cookie); // añadir la cookie a la respuesta
+        // eliminar la cookie del token de autenticacion
+        String cookieHeader = AppConstants.TOKEN_HEADER + "=; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=0";
+        response.addHeader("Set-Cookie", cookieHeader);
 
         SuccessResponse<?> successResponse = new SuccessResponse<>();
         successResponse.setStatus("success");
@@ -118,11 +113,9 @@ public class UserController {
 
         userService.deleteAccount(verifyCodeDto);
 
-        Cookie cookie = new Cookie(AppConstants.TOKEN_HEADER, null);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
+        // eliminar la cookie del token autenticacion
+        String cookieHeader = AppConstants.TOKEN_HEADER + "=; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=0";
+        response.addHeader("Set-Cookie", cookieHeader);
 
         SuccessResponse<?> successResponse = new SuccessResponse<>();
         successResponse.setStatus("success");

@@ -35,18 +35,16 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<?> signUp(@RequestBody @Valid SignUpDto signUpDto, HttpServletResponse response) {
         User user = authService.signUp(signUpDto);
-        String token = jwtTokenService.generateToken(new UserPrincipal(user), TokenType.AUTH_TOKEN);
+        UserPrincipal userPrincipal = new UserPrincipal(user);
+        String token = jwtTokenService.generateToken(userPrincipal, TokenType.AUTH_TOKEN);
 
-        // añadir el token a una cookie
-        Cookie cookie = new Cookie(AppConstants.TOKEN_HEADER, token);
-        cookie.setHttpOnly(true); // para que la cookie no sea accesible desde JavaScript
-        // cookie.setSecure(true); // para que la cookie solo se envie a traves de https
-        cookie.setPath("/");
-        response.addCookie(cookie); // añadir la cookie a la respuesta
+        // añadir el token de autenticacion a una cookie httpOnly
+        String cookieHeader = AppConstants.TOKEN_HEADER + "=" + token + "; HttpOnly; Secure; SameSite=None; Path=/";
+        response.addHeader("Set-Cookie", cookieHeader);
 
         SuccessResponse<User> successResponse = new SuccessResponse<>();
         successResponse.setStatus("success");
-        successResponse.setMessage("Please, check your email to verify your account.");
+        successResponse.setMessage("Successful sign up.");
         successResponse.setData(user);
         return new ResponseEntity<>(successResponse, HttpStatus.CREATED);
     }
@@ -54,13 +52,12 @@ public class AuthController {
     @PostMapping("/signin")
     public ResponseEntity<?> signIn(@RequestBody @Valid SignInDto signInDto, HttpServletResponse response) {
         User user = authService.authenticateUser(signInDto);
-        String token = jwtTokenService.generateToken(new UserPrincipal(user), TokenType.AUTH_TOKEN);
+        UserPrincipal userPrincipal = new UserPrincipal(user);
+        String token = jwtTokenService.generateToken(userPrincipal, TokenType.AUTH_TOKEN);
 
-        Cookie cookie = new Cookie(AppConstants.TOKEN_HEADER, token);
-        cookie.setHttpOnly(true);
-        // cookie.setSecure(true);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+        // añadir el token de autenticacion a una cookie httpOnly
+        String cookieHeader = AppConstants.TOKEN_HEADER + "=" + token + "; HttpOnly; Secure; SameSite=None; Path=/";
+        response.addHeader("Set-Cookie", cookieHeader);
 
         SuccessResponse<User> successResponse = new SuccessResponse<>();
         successResponse.setStatus("success");
@@ -75,7 +72,7 @@ public class AuthController {
 
         SuccessResponse<?> successResponse = new SuccessResponse<>();
         successResponse.setStatus("success");
-        successResponse.setMessage("Please, check your email.");
+        successResponse.setMessage("Please, check your email to reset your password.");
         return new ResponseEntity<>(successResponse, HttpStatus.ACCEPTED);
     }
 
