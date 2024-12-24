@@ -57,6 +57,10 @@ public class User {
     @OrderBy("date_last_modified DESC")
     private List<Page> pages;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<VerificationCode> verificationCodes;
+
     @Override
     public boolean equals(Object o) {
         if (this == o)

@@ -81,4 +81,8 @@ public class Page {
     @OrderBy("position ASC, date_created DESC")
     private List<CustomLink> customLinks;
 
+    @OneToMany(mappedBy = "page", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Visit> visits;
+
 }

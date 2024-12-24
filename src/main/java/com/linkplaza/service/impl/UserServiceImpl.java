@@ -79,7 +79,6 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    @Transactional
     public void deleteAccount(VerifyCodeDto verifyCodeDto) {
         User authUser = getAuthenticatedUser();
 
@@ -95,7 +94,6 @@ public class UserServiceImpl implements IUserService {
             throw new IllegalStateException("The verification code has expired.");
         }
         // si todo es correcto:
-        verificationCodeRepository.deleteByUser(authUser);
         userRepository.delete(authUser);
     }
 
