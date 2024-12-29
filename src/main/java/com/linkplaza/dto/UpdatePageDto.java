@@ -30,9 +30,6 @@ public class UpdatePageDto {
     @Size(max = 1024)
     private String bio;
 
-    @Size(max = 6400)
-    private String pictureUrl;
-
     @Pattern(regexp = AppConstants.HEX_COLOR_PATTERN, message = "Color must be a valid hexadecimal value (e.g. #RRGGBB or #RGB)")
     private String backgroundColor;
 

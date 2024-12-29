@@ -52,6 +52,9 @@ public class Page {
     @Column(columnDefinition = "TEXT")
     private String pictureUrl;
 
+    @JsonIgnore
+    private String pictureId;
+
     @Column(length = 7)
     private String backgroundColor;
 

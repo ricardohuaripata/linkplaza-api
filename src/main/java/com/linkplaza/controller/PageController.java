@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.linkplaza.dto.AddCustomLinkDto;
 import com.linkplaza.dto.AddSocialLinkDto;
@@ -62,7 +64,7 @@ public class PageController {
         successResponse.setMessage("Page created successfully.");
         successResponse.setData(page);
 
-        return new ResponseEntity<>(successResponse, HttpStatus.OK);
+        return new ResponseEntity<>(successResponse, HttpStatus.CREATED);
     }
 
     @PatchMapping("/{id}")
@@ -72,6 +74,18 @@ public class PageController {
         SuccessResponse<Page> successResponse = new SuccessResponse<>();
         successResponse.setStatus("success");
         successResponse.setMessage("Page updated successfully.");
+        successResponse.setData(page);
+
+        return new ResponseEntity<>(successResponse, HttpStatus.OK);
+    }
+
+    @PatchMapping("/{id}/picture")
+    public ResponseEntity<?> uploadPicture(@PathVariable Long id, @RequestParam MultipartFile picture) {
+        Page page = pageService.uploadPicture(id, picture);
+
+        SuccessResponse<Page> successResponse = new SuccessResponse<>();
+        successResponse.setStatus("success");
+        successResponse.setMessage("Picture uploaded successfully.");
         successResponse.setData(page);
 
         return new ResponseEntity<>(successResponse, HttpStatus.OK);
@@ -100,7 +114,7 @@ public class PageController {
         successResponse.setMessage("Social link added successfully.");
         successResponse.setData(page);
 
-        return new ResponseEntity<>(successResponse, HttpStatus.OK);
+        return new ResponseEntity<>(successResponse, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}/social-link/sort")
@@ -152,7 +166,7 @@ public class PageController {
         successResponse.setMessage("Custom link added successfully.");
         successResponse.setData(page);
 
-        return new ResponseEntity<>(successResponse, HttpStatus.OK);
+        return new ResponseEntity<>(successResponse, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}/custom-link/sort")

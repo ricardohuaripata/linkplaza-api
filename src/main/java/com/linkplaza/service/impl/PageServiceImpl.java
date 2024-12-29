@@ -1,16 +1,23 @@
 package com.linkplaza.service.impl;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.imageio.ImageIO;
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.cloudinary.utils.ObjectUtils;
 import com.linkplaza.common.AppConstants;
 import com.linkplaza.dto.AddCustomLinkDto;
 import com.linkplaza.dto.AddSocialLinkDto;
@@ -26,6 +33,7 @@ import com.linkplaza.entity.User;
 import com.linkplaza.repository.CustomLinkRepository;
 import com.linkplaza.repository.PageRepository;
 import com.linkplaza.repository.SocialLinkRepository;
+import com.linkplaza.service.ICloudinaryService;
 import com.linkplaza.service.IPageService;
 import com.linkplaza.service.ISocialPlatformService;
 import com.linkplaza.service.IUserService;
@@ -42,6 +50,8 @@ public class PageServiceImpl implements IPageService {
     private SocialLinkRepository socialLinkRepository;
     @Autowired
     private CustomLinkRepository customLinkRepository;
+    @Autowired
+    private ICloudinaryService cloudinaryService;
 
     @Override
     public Page getPageById(Long id) {
@@ -84,9 +94,6 @@ public class PageServiceImpl implements IPageService {
         }
         if (createPageDto.getBio() != null && createPageDto.getBio().trim().isEmpty() == false) {
             page.setBio(createPageDto.getBio());
-        }
-        if (createPageDto.getPictureUrl() != null && createPageDto.getPictureUrl().trim().isEmpty() == false) {
-            page.setPictureUrl(createPageDto.getPictureUrl());
         }
         if (createPageDto.getBackgroundColor() != null
                 && createPageDto.getBackgroundColor().trim().isEmpty() == false) {
@@ -137,9 +144,6 @@ public class PageServiceImpl implements IPageService {
         if (updatePageDto.getBio() != null && updatePageDto.getBio().trim().isEmpty() == false) {
             page.setBio(updatePageDto.getBio());
         }
-        if (updatePageDto.getPictureUrl() != null && updatePageDto.getPictureUrl().trim().isEmpty() == false) {
-            page.setPictureUrl(updatePageDto.getPictureUrl());
-        }
         if (updatePageDto.getBackgroundColor() != null
                 && updatePageDto.getBackgroundColor().trim().isEmpty() == false) {
             page.setBackgroundColor(updatePageDto.getBackgroundColor());
@@ -161,6 +165,51 @@ public class PageServiceImpl implements IPageService {
 
         page.setDateLastModified(new Date());
         return pageRepository.save(page);
+    }
+
+    @Override
+    public Page uploadPicture(Long pageId, MultipartFile picture) {
+        Page page = getPageById(pageId);
+        User user = userService.getAuthenticatedUser();
+
+        if (!page.getUser().equals(user)) {
+            throw new AccessDeniedException(AppConstants.NOT_PAGE_OWNER);
+        }
+
+        List<String> allowedContentTypes = Arrays.asList("image/jpg", "image/jpeg", "image/png", "image/webp");
+
+        String contentType = picture.getContentType();
+        if (contentType == null || !allowedContentTypes.contains(contentType)) {
+            throw new IllegalArgumentException("Only (jpg, jpeg, png, webp) files are allowed.");
+        }
+
+        try {
+            // eliminar imagen actual
+            if (page.getPictureId() != null) {
+                cloudinaryService.delete(page.getPictureId());
+            }
+
+            BufferedImage img = ImageIO.read(picture.getInputStream());
+            int width = img.getWidth();
+
+            String transformation = (width >= 400) ? "c_fill,w_400,h_400" : "c_fill,w_" + width + ",h_" + width;
+
+            // parametros para la optimizacion de la imagen
+            Map<String, Object> uploadParams = ObjectUtils.asMap("quality", "auto", "fetch_format", "auto", "transformation", transformation);
+
+            Map uploadResult = cloudinaryService.upload(picture, uploadParams);
+            String pictureUrl = (String) uploadResult.get("url");
+            String pictureId = (String) uploadResult.get("public_id");
+
+            page.setPictureUrl(pictureUrl);
+            page.setPictureId(pictureId);
+            page.setDateLastModified(new Date());
+            return pageRepository.save(page);
+
+        } catch (IOException e) {
+            throw new RuntimeException("Error while uploading picture.");
+        }
+
     }
 
     @Override

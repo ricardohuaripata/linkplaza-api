@@ -2,6 +2,8 @@ package com.linkplaza.service;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.linkplaza.dto.AddCustomLinkDto;
 import com.linkplaza.dto.AddSocialLinkDto;
 import com.linkplaza.dto.CreatePageDto;
@@ -26,6 +28,8 @@ public interface IPageService {
     Page createPage(CreatePageDto createPageDto);
 
     Page updatePage(Long pageId, UpdatePageDto updatePageDto);
+
+    Page uploadPicture(Long pageId, MultipartFile picture);
 
     Page addSocialLink(Long pageId, AddSocialLinkDto addSocialLinkDto);
 
