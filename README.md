@@ -4,7 +4,7 @@
   <a href="https://github.com/ricardohuaripata/linkplaza-api">
     <img src="https://github.com/user-attachments/assets/cb8ef255-cdeb-4c78-9aa7-550bf88d8185" alt="linkplaza logo" width="100" height="100">
   </a>
-  <h3 align="center">LinkPlaza API</h3>
+  <h1 align="center">LinkPlaza API</h1>
 </h1>
 <h4>A RESTful API for a link management platform, allowing users to centralize and customize their web and social media links.</h4>
 
@@ -48,3 +48,7 @@
   * <strong>POST</strong> /api/v1/analytic/social-link-click - Registrar clic en enlace social.
   * <strong>POST</strong> /api/v1/analytic/custom-link-click - Registrar clic en enlace personalizado.
   * <strong>GET</strong> /api/v1/analytic - Obtener analíticas de página por rango de fechas.
+
+## Database Diagram
+![linkplaza-db](https://github.com/user-attachments/assets/f916eb61-a129-4ee2-87fd-7cbfd784fe91)
+
