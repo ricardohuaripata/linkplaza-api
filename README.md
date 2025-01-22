@@ -8,7 +8,7 @@
 </h1>
 <p>A RESTful API for a link management platform, allowing users to centralize and customize their web and social media links. Built using Spring Boot, Spring Data JPA with MySQL and Spring Security with JWT Authentication.</p>
 
-<a href="https://documenter.getpostman.com/view/25547682/2sAYJ3EgtX">Frontend source code</a>
+<a href="https://github.com/ricardohuaripata/linkplaza">Frontend repository</a>
 <br>
 <a href="https://documenter.getpostman.com/view/25547682/2sAYJ3EgtX">Postman API documentation</a>
 
