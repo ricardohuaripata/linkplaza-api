@@ -6,7 +6,7 @@
   </a>
   <h1 align="center">LinkPlaza API</h1>
 </h1>
-<h4>A RESTful API for a link management platform, allowing users to centralize and customize their web and social media links. Linktree clone built using Spring Boot, Spring Data JPA with MySQL and Spring Security with JWT Authentication.</h4>
+<p>A RESTful API for a link management platform, allowing users to centralize and customize their web and social media links. Built using Spring Boot, Spring Data JPA with MySQL and Spring Security with JWT Authentication.</p>
 
 <a href="https://github.com/ricardohuaripata/linkplaza">
     <img src="https://github.com/user-attachments/assets/0c8c0d35-8b0b-4fb6-8f24-11e3c157a3ec" alt="linkplaza thumbnail" width="100%" height="auto">
