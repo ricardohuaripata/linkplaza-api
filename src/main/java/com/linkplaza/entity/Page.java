@@ -70,6 +70,12 @@ public class Page {
     @Column()
     private boolean buttonRounded;
 
+    @Column(length = 64)
+    private String fontStyle;
+
+    @Column(length = 64)
+    private String backgroundStyle;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     private Date dateCreated;
 

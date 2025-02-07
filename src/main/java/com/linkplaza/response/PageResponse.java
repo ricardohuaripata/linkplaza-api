@@ -28,6 +28,8 @@ public class PageResponse {
     private String buttonBackgroundColor;
     private String buttonFontColor;
     private boolean buttonRounded;
+    private String fontStyle;
+    private String backgroundStyle;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     private Date dateCreated;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")

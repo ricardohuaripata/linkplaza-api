@@ -44,4 +44,10 @@ public class UpdatePageDto {
 
     private Boolean buttonRounded;
 
+    @Pattern(regexp = "^(sans|serif|mono)$", message = "Font style must be 'sans', 'serif' or 'mono'")
+    private String fontStyle;
+
+    @Pattern(regexp = "^(flat|gradient-up|gradient-down)$", message = "Background style must be 'flat', 'gradient-up' or 'gradient-down'")
+    private String backgroundStyle;
+
 }

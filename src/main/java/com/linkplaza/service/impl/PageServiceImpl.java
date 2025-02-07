@@ -113,6 +113,12 @@ public class PageServiceImpl implements IPageService {
         if (createPageDto.getButtonRounded() != null) {
             page.setButtonRounded(createPageDto.getButtonRounded());
         }
+        if (createPageDto.getFontStyle() != null) {
+            page.setFontStyle(createPageDto.getFontStyle());
+        }
+        if (createPageDto.getBackgroundStyle() != null) {
+            page.setBackgroundStyle(createPageDto.getBackgroundStyle());
+        }
 
         page.setUrl(createPageDto.getUrl());
         page.setUser(user);
@@ -161,6 +167,12 @@ public class PageServiceImpl implements IPageService {
         }
         if (updatePageDto.getButtonRounded() != null) {
             page.setButtonRounded(updatePageDto.getButtonRounded());
+        }
+        if (updatePageDto.getFontStyle() != null) {
+            page.setFontStyle(updatePageDto.getFontStyle());
+        }
+        if (updatePageDto.getBackgroundStyle() != null) {
+            page.setBackgroundStyle(updatePageDto.getBackgroundStyle());
         }
 
         page.setDateLastModified(new Date());
